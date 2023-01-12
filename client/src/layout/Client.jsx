@@ -1,9 +1,11 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import Header from "../inc/Header";
 
 const Client = () => {
   return (
     <div>
+      <Header />
       <section class="container flex justify-between mx-auto">
         <div class="w-64">
           <div class="pt-5 border my-5">

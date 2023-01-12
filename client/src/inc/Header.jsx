@@ -10,8 +10,8 @@ const Header = () => {
             <p>Rubidsoft - All Rights Reserved</p>
           </div>
           <div class="nav1right">
-            <Link class="fl-r" to="md.hg.tushar/">
-              Developer
+            <Link class="fl-r" to="/admin">
+              Admin
             </Link>
           </div>
         </div>
@@ -80,7 +80,7 @@ const Header = () => {
                   <Link to="/website_templates">Website Templates</Link>
                 </li>
                 <li>
-                  <Link to="/our_works">Our Works</Link>
+                  <Link to="/works">Our Works</Link>
                 </li>
                 <li>
                   <Link to="/contact">Contact us</Link>
