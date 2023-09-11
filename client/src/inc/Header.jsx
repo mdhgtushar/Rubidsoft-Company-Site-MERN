@@ -1,5 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import site_settings from '../Site';
 
 const Header = () => {
   return (
@@ -19,7 +20,7 @@ const Header = () => {
       <div class=" bg-gray-100 p-2">
         <div class="container mx-auto flex justify-between">
           <div class="">
-            <p>Email: zzmism2020@gmail.com || Mob: +8801712498815</p>
+            <p>Email: {site_settings.info.email} || Mob: +8801712498815</p>
           </div>
           <div class="nav1right">
             <Link class="fl-r" to=" ">
@@ -38,11 +39,7 @@ const Header = () => {
           </div>
           <div class="flex">
             <div class="flex flex-col justify-center items-center p-2 mr-2 bg-gray-100">
-              <img
-                class="w-16"
-                src="http://www.01soft.com.bd/assets/img/top5.png"
-                alt=""
-              />
+              <img class="w-16" src="http://www.01soft.com.bd/assets/img/top5.png" alt="" />
               <Link to="" className="text-sm">
                 <b>Website Development</b>
               </Link>

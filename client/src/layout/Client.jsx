@@ -1,6 +1,6 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Header from "../inc/Header";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Header from '../inc/Header';
 
 const Client = () => {
   return (
@@ -16,22 +16,22 @@ const Client = () => {
             <div className="">
               <div class="p-1 px-5 border-b">
                 <p>
-                  * 01Soft have received work order from Fashion Hub (buying
-                  house) for their official website development
+                  * 01Soft have received work order from Fashion Hub (buying house) for their
+                  official website development
                 </p>
-              </div>{" "}
+              </div>{' '}
               <div class="p-1 px-5 border-b">
                 <p>
-                  * 01Soft have received work order from Mascon Fashion (USA)
-                  for their e-commerce website development
+                  * 01Soft have received work order from Mascon Fashion (USA) for their e-commerce
+                  website development
                 </p>
-              </div>{" "}
+              </div>{' '}
               <div class="p-1 px-5 border-b">
                 <p>
-                  * 01Soft have received work order from Technique BD for their
-                  official website's renovation
+                  * 01Soft have received work order from Technique BD for their official website's
+                  renovation
                 </p>
-              </div>{" "}
+              </div>{' '}
               <div class="p-1 px-5">
                 <p>** This is our new client</p>
               </div>
@@ -50,22 +50,22 @@ const Client = () => {
             <div className="">
               <div class="p-1 px-5 border-b">
                 <p>
-                  * 01Soft have received work order from Fashion Hub (buying
-                  house) for their official website development
+                  * 01Soft have received work order from Fashion Hub (buying house) for their
+                  official website development
                 </p>
-              </div>{" "}
+              </div>{' '}
               <div class="p-1 px-5 border-b">
                 <p>
-                  * 01Soft have received work order from Mascon Fashion (USA)
-                  for their e-commerce website development
+                  * 01Soft have received work order from Mascon Fashion (USA) for their e-commerce
+                  website development
                 </p>
-              </div>{" "}
+              </div>{' '}
               <div class="p-1 px-5 border-b">
                 <p>
-                  * 01Soft have received work order from Technique BD for their
-                  official website's renovation
+                  * 01Soft have received work order from Technique BD for their official website's
+                  renovation
                 </p>
-              </div>{" "}
+              </div>{' '}
               <div class="p-1 px-5">
                 <p>** This is our new client</p>
               </div>
