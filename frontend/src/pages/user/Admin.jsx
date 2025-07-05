@@ -15,7 +15,7 @@ const Admin = () => {
             <div className="overflow-hidden p-5 bg-gray-100">
               <h2 className="float-left">
                 <Link to="/admin">
-                  <b>MODERN SCHOOL V1.0</b>
+                  <b>Rubidsoft Supper admin V1.0</b>
                 </Link>
               </h2>
 

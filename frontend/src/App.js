@@ -15,12 +15,17 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import Home from './pages/user/Home';
 import About from './pages/user/About';
 import Contact from './pages/user/Contact';
+import ContactAdmin from './pages/admin/Contact';
 import Works from './pages/user/Works';
 import UserDashboard from './pages/user/UserDashboard';
 
 // Components
 import Header from './components/Header';
 import AdminHeader from './components/AdminHeader';
+import ClientList from './pages/admin/ClientList';
+import Tasks from './pages/admin/Tasks';
+import BlogAdmin from './pages/admin/Blog';
+import ServicesAdminPage from './pages/admin/Services';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -28,13 +33,13 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const userRole = localStorage.getItem('userRole') || 'user';
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!isAuthenticated) {
+  //   return <Navigate to="/login" replace />;
+  // }
   
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+  // if (allowedRoles && !allowedRoles.includes(userRole)) {
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
   
   return children;
 };
@@ -51,6 +56,7 @@ function App() {
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
             <Route path="works" element={<Works />} />
+            <Route path="*" element={<div>Page Not Found</div>} />
           </Route>
           {/* Login Route */}
           <Route path="/login" element={<div>Login Page</div>} />
@@ -65,8 +71,14 @@ function App() {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="users" element={<div>User Management</div>} />
-            <Route path="settings" element={<div>Admin Settings</div>} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="clients" element={<ClientList />} />
+            <Route path="services" element={<ServicesAdminPage />} />
+            <Route path="products" element={<div>Admin Settings</div>} />
+            <Route path="lab" element={<div>Admin Settings</div>} />
+            <Route path="contact" element={<ContactAdmin />} />
+            <Route path="blog" element={<BlogAdmin />} />
+            <Route path="*" element={<div>Page Not Found</div>} />
           </Route>
           {/* User Dashboard Routes */}
           <Route 
