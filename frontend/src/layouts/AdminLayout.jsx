@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import AdminHeader from '../components/AdminHeader';
 
-const AdminLayout = () => {
+const AdminLayout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
@@ -145,7 +145,7 @@ const AdminLayout = () => {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="p-6">
-            <Outlet />
+            {children}
           </div>
         </main>
 

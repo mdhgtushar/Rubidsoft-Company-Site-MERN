@@ -18,7 +18,8 @@ const Header = () => {
     { path: "/", label: "HOME", icon: "🏢" },
     { path: "/about", label: "ABOUT", icon: "📊" },
     { path: "/services", label: "SERVICES", icon: "⚡" },
-    { path: "/projects", label: "PROJECTS", icon: "🎯" },
+    { path: "/projects", label: "PROJECTS", icon: "��" },
+    { path: "/blog", label: "BLOG", icon: "📰" },
     { path: "/contact", label: "CONTACT", icon: "📞" }
   ];
 

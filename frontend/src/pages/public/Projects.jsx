@@ -1,17 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { projects, getAllCategories } from "../../data/projects";
+import { projectService } from "../../services/apiService";
+import { Loader2, AlertCircle } from "lucide-react";
 
 const Projects = () => {
   const navigate = useNavigate();
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
 
-  const categories = getAllCategories();
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-  const filteredProjects = filterCategory === "all" 
-    ? projects 
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await projectService.getAllProjects({ published: true, limit: 50 });
+      setProjects(response.data.data.projects || []);
+    } catch (err) {
+      setError("Failed to load projects. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCategories = () => {
+    const categories = [...new Set(projects.map(project => project.category))];
+    return ["all", ...categories.filter(Boolean)];
+  };
+
+  const filteredProjects = filterCategory === "all"
+    ? projects
     : projects.filter(project => project.category === filterCategory);
+
+  if (loading) {
+    return (
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">Our Previous Projects</h1>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Explore our completed work and see how we've helped businesses achieve their digital goals.
+            </p>
+          </div>
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="animate-spin text-4xl text-blue-600" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">Our Previous Projects</h1>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Explore our completed work and see how we've helped businesses achieve their digital goals.
+            </p>
+          </div>
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <AlertCircle className="mx-auto text-4xl text-red-500 mb-4" />
+              <p className="text-red-600 mb-4">{error}</p>
+              <button 
+                onClick={fetchProjects}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-8">
@@ -28,7 +97,7 @@ const Projects = () => {
         {/* Filter Categories */}
         <div className="flex justify-center mb-8">
           <div className="flex space-x-2 bg-slate-100 rounded-lg p-1">
-            {categories.map((category) => (
+            {getCategories().map((category) => (
               <button
                 key={category}
                 onClick={() => setFilterCategory(category)}
@@ -48,9 +117,9 @@ const Projects = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {filteredProjects.map((project) => (
             <div
-              key={project.id}
+              key={project._id}
               className="bg-white rounded-lg shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 cursor-pointer"
-              onClick={() => navigate(`/projects/${project.id}`)}
+              onClick={() => navigate(`/projects/${project.slug}`)}
             >
               <div className="relative">
                 <img 
@@ -76,7 +145,7 @@ const Projects = () => {
                     className="text-blue-600 font-semibold hover:text-blue-700 transition-colors duration-200"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/projects/${project.id}`);
+                      setSelectedProject(project);
                     }}
                   >
                     View Details →
@@ -137,7 +206,7 @@ const Projects = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-3">Technologies Used</h3>
                     <div className="flex flex-wrap gap-2">
-                      {selectedProject.technologies.map((tech, index) => (
+                      {selectedProject.technologies && selectedProject.technologies.map((tech, index) => (
                         <span key={index} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full">
                           {tech}
                         </span>
@@ -149,7 +218,7 @@ const Projects = () => {
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-slate-900 mb-3">Key Features</h3>
                   <div className="grid md:grid-cols-2 gap-2">
-                    {selectedProject.features.map((feature, index) => (
+                    {selectedProject.features && selectedProject.features.map((feature, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -161,29 +230,31 @@ const Projects = () => {
                 </div>
 
                 {/* Similar Services */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">Similar Services</h3>
-                  <p className="text-slate-600 mb-3">
-                    Need something similar? We can help you with related services:
-                  </p>
-                  <div className="flex space-x-2">
-                    {selectedProject.similarServices.map((service, index) => (
-                      <Link
-                        key={index}
-                        to={`/services/${service}`}
-                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                      >
-                        {service.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        {index < selectedProject.similarServices.length - 1 && ', '}
-                      </Link>
-                    ))}
+                {selectedProject.similarServices && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Similar Services</h3>
+                    <p className="text-slate-600 mb-3">
+                      Need something similar? We can help you with related services:
+                    </p>
+                    <div className="flex space-x-2">
+                      {selectedProject.similarServices.map((service, index) => (
+                        <Link
+                          key={index}
+                          to={`/services/${service}`}
+                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                        >
+                          {service.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          {index < selectedProject.similarServices.length - 1 && ', '}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* CTA Buttons */}
                 <div className="flex space-x-4">
                   <Link
-                    to={`/projects/${selectedProject.id}/order`}
+                    to={`/projects/${selectedProject.slug}/order`}
                     className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 text-center"
                   >
                     Order Similar Project

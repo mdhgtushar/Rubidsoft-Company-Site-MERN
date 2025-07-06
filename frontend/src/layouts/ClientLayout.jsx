@@ -1,9 +1,8 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const ClientLayout = () => {
+const ClientLayout = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header at the top level */}
@@ -13,7 +12,7 @@ const ClientLayout = () => {
       <div className="flex-1 bg-gray-50">
         {/* Main Content with top padding for fixed header */}
         <main className="pt-16">
-          <Outlet />
+          {children}
         </main>
       </div>
 
@@ -23,4 +22,4 @@ const ClientLayout = () => {
   );
 };
 
-export default ClientLayout; 
+export default React.memo(ClientLayout); 
