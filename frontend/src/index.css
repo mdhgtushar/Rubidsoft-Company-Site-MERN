@@ -37,3 +37,295 @@ body, #root {
   overflow-x: hidden;
   width: 100%;
 }
+
+/* Custom Admin Panel Styles */
+@layer components {
+  /* Sidebar Styles */
+  .admin-sidebar {
+    @apply bg-white shadow-lg border-r border-gray-200;
+  }
+
+  .admin-sidebar-item {
+    @apply flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 group;
+  }
+
+  .admin-sidebar-item-active {
+    @apply bg-blue-50 text-blue-700 border-r-2 border-blue-600;
+  }
+
+  .admin-sidebar-item-inactive {
+    @apply text-gray-700 hover:bg-gray-50 hover:text-gray-900;
+  }
+
+  /* Card Styles */
+  .admin-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden;
+  }
+
+  .admin-card-header {
+    @apply px-6 py-4 border-b border-gray-200 bg-gray-50;
+  }
+
+  .admin-card-body {
+    @apply p-6;
+  }
+
+  /* Button Styles */
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium;
+  }
+
+  .btn-success {
+    @apply px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium;
+  }
+
+  /* Status Badge Styles */
+  .badge-success {
+    @apply inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-danger {
+    @apply inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800;
+  }
+
+  /* Table Styles */
+  .admin-table {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+
+  .admin-table-header {
+    @apply bg-gray-50;
+  }
+
+  .admin-table-header-cell {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  .admin-table-body {
+    @apply bg-white divide-y divide-gray-200;
+  }
+
+  .admin-table-row {
+    @apply hover:bg-gray-50 transition-colors;
+  }
+
+  .admin-table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  }
+
+  /* Form Styles */
+  .admin-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+
+  .admin-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+
+  .admin-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+
+  /* Modal Styles */
+  .admin-modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4;
+  }
+
+  .admin-modal {
+    @apply bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto;
+  }
+
+  /* Stats Card Styles */
+  .stats-card {
+    @apply bg-white rounded-xl p-6 shadow-sm border border-gray-200;
+  }
+
+  .stats-card-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center;
+  }
+
+  /* Progress Bar Styles */
+  .progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+
+  .progress-bar-fill {
+    @apply h-2 rounded-full transition-all duration-300;
+  }
+
+  .progress-bar-success {
+    @apply bg-green-500;
+  }
+
+  .progress-bar-warning {
+    @apply bg-yellow-500;
+  }
+
+  .progress-bar-danger {
+    @apply bg-red-500;
+  }
+
+  .progress-bar-info {
+    @apply bg-blue-500;
+  }
+
+  /* Animation Classes */
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .slide-in-right {
+    animation: slideInRight 0.3s ease-in-out;
+  }
+
+  .slide-in-left {
+    animation: slideInLeft 0.3s ease-in-out;
+  }
+
+  .scale-in {
+    animation: scaleIn 0.2s ease-in-out;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    @apply absolute z-10 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg opacity-0 invisible transition-all duration-200;
+  }
+
+  .tooltip-trigger:hover .tooltip {
+    @apply opacity-100 visible;
+  }
+
+  /* Responsive Utilities */
+  .admin-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .admin-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .admin-flex {
+    @apply flex flex-col md:flex-row gap-4;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .admin-sidebar {
+    @apply bg-gray-900 border-gray-700;
+  }
+
+  .admin-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .admin-table-header {
+    @apply bg-gray-800;
+  }
+
+  .admin-table-body {
+    @apply bg-gray-900;
+  }
+
+  .admin-input,
+  .admin-select,
+  .admin-textarea {
+    @apply bg-gray-800 border-gray-600 text-white;
+  }
+}
+
+/* Print styles */
+@media print {
+  .admin-sidebar,
+  .admin-header,
+  .admin-footer {
+    display: none !important;
+  }
+
+  .admin-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

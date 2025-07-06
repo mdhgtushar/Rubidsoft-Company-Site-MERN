@@ -10,7 +10,7 @@ const connectDB = require('./utils/db');
 const errorHandler = require('./middleware/errorHandler');
 
 // Import routes
-const userRoutes = require('./features/user/user.routes');
+const routes = require('./features/routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -34,7 +34,7 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
-// contribute
+
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -55,8 +55,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/auth', userRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api', routes);
 
 // 404 handler
 app.use('*', (req, res) => {

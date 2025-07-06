@@ -1,33 +1,62 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-const MenuButton1 = ({ active, btn, goLink, title }) => {
-  let linkStyle =
-    "w-full font-thin uppercase flex items-center my-2 transition-colors duration-200 justify-start bg-gradient-to-l from-gray-200  border-l-4  ";
-  btn === 1 ? (linkStyle += "p-4 ") : (linkStyle += "p-3 ");
-  active === true
-    ? (linkStyle +=
-        "to-gray-300 border-blue-500 border-blue-500 text-black-500")
-    : (linkStyle += "to-white border-gray-500 border-gray-500 text-gray-500");
+const MenuButton = ({ 
+  active = false, 
+  btn = 1, 
+  goLink = "#", 
+  title = "Menu Item",
+  icon = "📋",
+  badge = null,
+  collapsed = false,
+  onClick = null
+}) => {
+  const location = useLocation();
+  const isActive = location.pathname === goLink || location.pathname.startsWith(goLink);
+
+  const baseClasses = `
+    flex items-center w-full px-3 py-2.5 rounded-lg transition-all duration-200 group
+    ${collapsed ? 'justify-center' : 'justify-between'}
+  `;
+
+  const activeClasses = isActive || active
+    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900';
+
+  const content = (
+    <div className={`${baseClasses} ${activeClasses}`}>
+      <div className="flex items-center space-x-3">
+        <span className="text-lg">{icon}</span>
+        {!collapsed && (
+          <span className="font-medium">{title}</span>
+        )}
+      </div>
+      {badge && !collapsed && (
+        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+          {badge}
+        </span>
+      )}
+      {badge && collapsed && (
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className="w-full relative">
+        {content}
+      </button>
+    );
+  }
 
   return (
-    <div>
-      <Link className={linkStyle} to={goLink}>
-        <span className="text-left">
-          <svg
-            width="20"
-            height="20"
-            fill="currentColor"
-            viewBox="0 0 2048 1792"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M1070 1178l306-564h-654l-306 564h654zm722-282q0 182-71 348t-191 286-286 191-348 71-348-71-286-191-191-286-71-348 71-348 191-286 286-191 348-71 348 71 286 191 191 286 71 348z"></path>
-          </svg>
-        </span>
-        <span className="mx-4 text-sm font-normal"> {title} </span>
-      </Link>
-    </div>
+    <Link to={goLink} className="w-full relative block">
+      {content}
+    </Link>
   );
 };
 
-export default MenuButton1;
+export default MenuButton; 

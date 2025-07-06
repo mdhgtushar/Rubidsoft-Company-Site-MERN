@@ -28,7 +28,9 @@ import AdminContact from './pages/admin/Contact';
 import Lab from './pages/admin/Lab';
 import Products from './pages/admin/Products';
 import ServicesAdminPage from './pages/admin/Services';
+import Settings from './pages/admin/Settings';
 import Tasks from './pages/admin/Tasks';
+import Orders from './pages/admin/Orders';
 
 // User Dashboard Pages
 import UserDashboard from './pages/user/UserDashboard';
@@ -91,7 +93,9 @@ function App() {
             <Route path="lab" element={<Lab />} />
             <Route path="products" element={<Products />} />
             <Route path="services" element={<ServicesAdminPage />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="tasks" element={<Tasks />} />
+            <Route path="orders" element={<Orders />} />
             <Route path="*" element={<div>Page Not Found</div>} />
           </Route>
           
