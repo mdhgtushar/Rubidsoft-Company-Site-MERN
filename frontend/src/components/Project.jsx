@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const Project = () => {
+const Project = ({ project }) => {
   return (
     <div className="w-full border border-gray-200 ">
       <div className="flex items-center  p-5">
@@ -11,17 +12,17 @@ const Project = () => {
         />
         <div className="pl-5">
           <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-            School-Management-System
+            {project?.title || "School-Management-System"}
           </h5>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            React, Express, Mongodb
+            {project?.technologies || "React, Express, Mongodb"}
           </span>
           <br />
-          <small>Rubidsoft Team</small>
+          <small>{project?.team || "Rubidsoft Team"}</small>
           <hr />
-          <a href="/teachers/12" className="text-green-700">
+          <Link to={`/projects/${project?.id || 'default'}`} className="text-green-700 hover:text-green-800 transition-colors duration-200">
             View Project
-          </a>
+          </Link>
         </div>
       </div>
     </div>

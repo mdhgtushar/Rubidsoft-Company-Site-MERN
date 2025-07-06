@@ -21,7 +21,7 @@ const AdminHeader = () => {
         </div>
       </Link>
 
-      <nav>
+      <nav className="p-2">
         <p className="w-full border-b-2 pt-2 border-gray-400 mt-4 text-md font-normal">
           Dashboard
         </p>

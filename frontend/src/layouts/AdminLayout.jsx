@@ -1,8 +1,8 @@
 import React from "react";
-import { Link, Navigate, Outlet } from "react-router-dom";
-import AdminHeader from '../../components/AdminHeader';
+import { Link, Outlet } from "react-router-dom";
+import AdminHeader from '../components/AdminHeader';
 
-const Admin = () => {
+const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Fixed Sidebar */}
@@ -46,4 +46,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default AdminLayout; 

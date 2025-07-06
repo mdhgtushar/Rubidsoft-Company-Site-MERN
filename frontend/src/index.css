@@ -8,6 +8,10 @@
 }
 
 /* Additional base styles */
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -15,9 +19,21 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Prevent horizontal scrollbars */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure no horizontal overflow */
+body, #root {
+  overflow-x: hidden;
+  width: 100%;
 }
