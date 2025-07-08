@@ -1,119 +1,149 @@
 import React, { useState, useEffect } from "react";
+import { contactService } from "../../services/apiService";
 
 const Contact = () => {
-    const [contacts, setContacts] = useState([
-        {
-            id: 1,
-            name: "John Doe",
-            email: "john@example.com",
-            phone: "+1 (555) 123-4567",
-            subject: "Website Development Inquiry",
-            message: "Hello, I'm interested in getting a new website developed for my business. Could you please provide more information about your services and pricing?",
-            date: "2024-01-15",
-            status: "New",
-            priority: "High",
-            source: "Website Contact Form"
-        },
-        {
-            id: 2,
-            name: "Jane Smith",
-            email: "jane@example.com",
-            phone: "+1 (555) 234-5678",
-            subject: "Mobile App Development",
-            message: "I need a mobile app developed for my startup. Looking for a reliable development team with experience in React Native.",
-            date: "2024-01-14",
-            status: "In Progress",
-            priority: "Medium",
-            source: "Email"
-        },
-        {
-            id: 3,
-            name: "Mike Johnson",
-            email: "mike@example.com",
-            phone: "+1 (555) 345-6789",
-            subject: "Consultation Request",
-            message: "Would like to schedule a consultation to discuss our project requirements and get a quote.",
-            date: "2024-01-13",
-            status: "Responded",
-            priority: "Low",
-            source: "Phone Call"
-        },
-        {
-            id: 4,
-            name: "Sarah Wilson",
-            email: "sarah@example.com",
-            phone: "+1 (555) 456-7890",
-            subject: "Bug Fix Request",
-            message: "There's a bug in our existing website that needs to be fixed urgently. Can you help?",
-            date: "2024-01-12",
-            status: "Resolved",
-            priority: "High",
-            source: "Support Ticket"
-        }
-    ]);
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedPriority, setSelectedPriority] = useState("all");
 
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState("all");
-    const [selectedPriority, setSelectedPriority] = useState("all");
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
-    const [selectedContact, setSelectedContact] = useState(null);
+  const statusOptions = ["new", "in-progress", "responded", "resolved", "spam"];
+  const priorityOptions = ["low", "medium", "high", "urgent"];
 
-    const statusOptions = ["New", "In Progress", "Responded", "Resolved"];
-    const priorityOptions = ["Low", "Medium", "High", "Critical"];
-
-    const filteredContacts = contacts.filter(contact => {
-        const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             contact.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             contact.message.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = selectedStatus === "all" || contact.status === selectedStatus;
-        const matchesPriority = selectedPriority === "all" || contact.priority === selectedPriority;
-        return matchesSearch && matchesStatus && matchesPriority;
-    });
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "New": return "bg-blue-100 text-blue-800";
-            case "In Progress": return "bg-yellow-100 text-yellow-800";
-            case "Responded": return "bg-green-100 text-green-800";
-            case "Resolved": return "bg-gray-100 text-gray-800";
-            default: return "bg-gray-100 text-gray-800";
-        }
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await contactService.getAllContacts();
+        // Defensive: always set to array
+        setContacts(Array.isArray(response.data.data) ? response.data.data : []);
+      } catch (err) {
+        console.error('Error fetching contacts:', err);
+        setError('Failed to load contacts. Please try again.');
+        setContacts([]); // Defensive fallback
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const getPriorityColor = (priority) => {
-        switch (priority) {
-            case "Critical": return "bg-red-100 text-red-800";
-            case "High": return "bg-orange-100 text-orange-800";
-            case "Medium": return "bg-yellow-100 text-yellow-800";
-            case "Low": return "bg-green-100 text-green-800";
-            default: return "bg-gray-100 text-gray-800";
-        }
-    };
+    fetchContacts();
+  }, []);
 
-    const handleStatusChange = (id, newStatus) => {
-        setContacts(contacts.map(contact => 
-            contact.id === id ? { ...contact, status: newStatus } : contact
-        ));
-    };
+  const filteredContacts = contacts.filter(contact => {
+    const matchesSearch = contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         contact.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         contact.company?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = selectedStatus === "all" || contact.status === selectedStatus;
+    const matchesPriority = selectedPriority === "all" || contact.priority === selectedPriority;
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
 
-    const handleDeleteContact = (id) => {
-        if (window.confirm("Are you sure you want to delete this contact?")) {
-            setContacts(contacts.filter(contact => contact.id !== id));
-        }
-    };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "resolved": return "bg-green-100 text-green-800";
+      case "responded": return "bg-blue-100 text-blue-800";
+      case "in-progress": return "bg-yellow-100 text-yellow-800";
+      case "new": return "bg-purple-100 text-purple-800";
+      case "spam": return "bg-red-100 text-red-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
 
-    const handleViewDetails = (contact) => {
-        setSelectedContact(contact);
-        setShowDetailsModal(true);
-    };
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "urgent": return "bg-red-100 text-red-800";
+      case "high": return "bg-orange-100 text-orange-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
 
-    const stats = {
-        total: contacts.length,
-        new: contacts.filter(c => c.status === "New").length,
-        inProgress: contacts.filter(c => c.status === "In Progress").length,
-        resolved: contacts.filter(c => c.status === "Resolved").length
-    };
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await contactService.updateContactStatus(id, newStatus);
+      setContacts(contacts.map(contact => 
+        contact._id === id ? { ...contact, status: newStatus } : contact
+      ));
+    } catch (err) {
+      console.error('Error updating contact status:', err);
+      alert('Failed to update contact status. Please try again.');
+    }
+  };
+
+  const handleDeleteContact = async (id) => {
+    if (window.confirm("Are you sure you want to delete this contact?")) {
+      try {
+        await contactService.deleteContact(id);
+        setContacts(contacts.filter(contact => contact._id !== id));
+        alert('Contact deleted successfully!');
+      } catch (err) {
+        console.error('Error deleting contact:', err);
+        alert('Failed to delete contact. Please try again.');
+      }
+    }
+  };
+
+  const handleViewDetails = (contact) => {
+    setSelectedContact(contact);
+    setShowDetailsModal(true);
+  };
+
+  const handleAddResponse = async (contactId, response) => {
+    try {
+      await contactService.addResponse(contactId, { message: response, method: 'email' });
+      alert('Response added successfully!');
+      // Refresh the contact list
+      const response = await contactService.getAllContacts();
+      setContacts(response.data.data || []);
+    } catch (err) {
+      console.error('Error adding response:', err);
+      alert('Failed to add response. Please try again.');
+    }
+  };
+
+  const stats = {
+    total: contacts.length,
+    new: contacts.filter(c => c.status === "new").length,
+    inProgress: contacts.filter(c => c.status === "in-progress").length,
+    responded: contacts.filter(c => c.status === "responded").length,
+    resolved: contacts.filter(c => c.status === "resolved").length,
+    spam: contacts.filter(c => c.status === "spam").length
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading contacts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
     return (
         <div className="space-y-6">
@@ -151,9 +181,9 @@ const Contact = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">New</p>
-                            <p className="text-2xl font-bold text-blue-600">{stats.new}</p>
+                            <p className="text-2xl font-bold text-purple-600">{stats.new}</p>
                         </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                             <span className="text-2xl">🆕</span>
                         </div>
                     </div>
@@ -263,12 +293,12 @@ const Contact = () => {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {filteredContacts.map((contact) => (
-                                <tr key={contact.id} className="hover:bg-gray-50">
+                                <tr key={contact._id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
                                                 <span className="text-sm font-medium text-gray-600">
-                                                    {contact.name.split(' ').map(n => n[0]).join('')}
+                                                    {contact.name?.split(' ').map(n => n[0]).join('')}
                                                 </span>
                                             </div>
                                             <div>
@@ -287,7 +317,7 @@ const Contact = () => {
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <select
                                             value={contact.status}
-                                            onChange={(e) => handleStatusChange(contact.id, e.target.value)}
+                                            onChange={(e) => handleStatusChange(contact._id, e.target.value)}
                                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border-0 ${getStatusColor(contact.status)}`}
                                         >
                                             {statusOptions.map(status => (
@@ -312,7 +342,7 @@ const Contact = () => {
                                                 👁️ View
                                             </button>
                                             <button
-                                                onClick={() => handleDeleteContact(contact.id)}
+                                                onClick={() => handleDeleteContact(contact._id)}
                                                 className="text-red-600 hover:text-red-900"
                                             >
                                                 🗑️ Delete
@@ -387,7 +417,7 @@ const Contact = () => {
                                 <select
                                     value={selectedContact.status}
                                     onChange={(e) => {
-                                        handleStatusChange(selectedContact.id, e.target.value);
+                                        handleStatusChange(selectedContact._id, e.target.value);
                                         setSelectedContact({...selectedContact, status: e.target.value});
                                     }}
                                     className="mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

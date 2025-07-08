@@ -166,32 +166,32 @@ const OrderForm = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">
-            {serviceId ? "Order Service" : "Order Similar Project"}
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-2">
+            {serviceId ? "Order Web Development Service" : "Order Similar Project"}
           </h1>
-          <p className="text-slate-600">
+          <p className="text-xl text-slate-600">
             {serviceId 
-              ? "Get started with our professional services" 
-              : "Order a project similar to our completed work"
+              ? "Get started with our professional web development services" 
+              : "Order a web development project similar to our completed work"
             }
           </p>
         </div>
 
         {/* Order Summary */}
         {orderData && (
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-8">
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">{orderData.title}</h2>
-                <p className="text-slate-600">{orderData.description}</p>
+                <h2 className="text-2xl font-bold text-slate-800">{orderData.title}</h2>
+                <p className="text-slate-600 text-lg">{orderData.description}</p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-slate-600">Starting from</p>
-                <p className="text-2xl font-bold text-blue-600">{orderData.basePrice}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{orderData.basePrice}</p>
                 <p className="text-sm text-slate-600">Timeline: {orderData.timeline}</p>
               </div>
             </div>

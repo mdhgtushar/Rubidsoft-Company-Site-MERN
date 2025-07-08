@@ -1,153 +1,205 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { blogService } from "../../services/apiService";
 
 const Blog = () => {
-  const [blogs, setBlogs] = useState([
-    {
-      id: 1,
-      title: "Getting Started with MERN Stack Development",
-      author: "John Doe",
-      date: "2024-01-15",
-      published: true,
-      category: "Development",
-      tags: ["MERN", "JavaScript", "React"],
-      content: "MERN stack is a popular JavaScript framework for building web applications...",
-      image: "https://via.placeholder.com/300x200",
-      views: 1250,
-      likes: 45
-    },
-    {
-      id: 2,
-      title: "Best Practices for UI/UX Design in 2024",
-      author: "Jane Smith",
-      date: "2024-01-12",
-      published: true,
-      category: "Design",
-      tags: ["UI/UX", "Design", "Trends"],
-      content: "User experience design has evolved significantly over the years...",
-      image: "https://via.placeholder.com/300x200",
-      views: 890,
-      likes: 32
-    },
-    {
-      id: 3,
-      title: "The Future of Web Development",
-      author: "Mike Johnson",
-      date: "2024-01-10",
-      published: false,
-      category: "Technology",
-      tags: ["Web Development", "Future", "AI"],
-      content: "As we move forward in 2024, web development continues to evolve...",
-      image: "https://via.placeholder.com/300x200",
-      views: 0,
-      likes: 0
-    }
-  ]);
-
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingBlog, setEditingBlog] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const [newBlog, setNewBlog] = useState({
+  const [newPost, setNewPost] = useState({
     title: "",
-    author: "",
-    category: "Development",
-    tags: "",
+    excerpt: "",
     content: "",
-    image: "",
-    published: false
+    featuredImage: "",
+    category: "",
+    tags: [],
+    status: "draft",
+    isFeatured: false,
+    isPublished: false,
+    seo: {
+      metaTitle: "",
+      metaDescription: "",
+      keywords: []
+    }
   });
 
-  const categories = ["Development", "Design", "Technology", "Business", "Tutorials"];
-  const statusOptions = ["Published", "Draft"];
+  const statusOptions = ["draft", "published", "archived"];
+  const categoryOptions = ["web-development", "mobile-development", "ui-ux-design", "digital-marketing", "technology", "business"];
 
-  const filteredBlogs = blogs.filter(blog => {
-    const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         blog.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         blog.content.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || blog.category === selectedCategory;
-    const matchesStatus = selectedStatus === "all" || 
-                         (selectedStatus === "Published" && blog.published) ||
-                         (selectedStatus === "Draft" && !blog.published);
-    return matchesSearch && matchesCategory && matchesStatus;
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await blogService.getAllBlogPosts();
+        setBlogPosts(Array.isArray(response.data.data) ? response.data.data : []);
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+        setError('Failed to load blog posts. Please try again.');
+        setBlogPosts([]); // Defensive fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
+  const filteredPosts = blogPosts.filter(post => {
+    const matchesSearch = post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = selectedStatus === "all" || post.status === selectedStatus;
+    const matchesCategory = selectedCategory === "all" || post.category === selectedCategory;
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  const handleAddBlog = () => {
-    if (newBlog.title && newBlog.author && newBlog.content) {
-      const blog = {
-        id: blogs.length + 1,
-        ...newBlog,
-        date: new Date().toISOString().split('T')[0],
-        tags: newBlog.tags.split(',').map(tag => tag.trim()),
-        views: 0,
-        likes: 0
-      };
-      setBlogs([...blogs, blog]);
-      setNewBlog({
-        title: "",
-        author: "",
-        category: "Development",
-        tags: "",
-        content: "",
-        image: "",
-        published: false
-      });
+  const handleAddPost = async () => {
+    try {
+      await blogService.createBlogPost(newPost);
       setShowAddModal(false);
+      setNewPost({
+        title: "",
+        excerpt: "",
+        content: "",
+        featuredImage: "",
+        category: "",
+        tags: [],
+        status: "draft",
+        isFeatured: false,
+        isPublished: false,
+        seo: {
+          metaTitle: "",
+          metaDescription: "",
+          keywords: []
+        }
+      });
+      // Refresh the blog posts list
+      const response = await blogService.getAllBlogPosts();
+      setBlogPosts(Array.isArray(response.data.data) ? response.data.data : []);
+      alert('Blog post added successfully!');
+    } catch (err) {
+      console.error('Error adding blog post:', err);
+      alert('Failed to add blog post. Please try again.');
     }
   };
 
-  const handleEditBlog = (blog) => {
-    setEditingBlog(blog);
-    setNewBlog({
-      title: blog.title,
-      author: blog.author,
-      category: blog.category,
-      tags: blog.tags.join(', '),
-      content: blog.content,
-      image: blog.image,
-      published: blog.published
-    });
-    setShowAddModal(true);
-  };
-
-  const handleUpdateBlog = () => {
-    if (editingBlog && newBlog.title && newBlog.author && newBlog.content) {
-      setBlogs(blogs.map(b => 
-        b.id === editingBlog.id 
-          ? { 
-              ...b, 
-              ...newBlog,
-              tags: newBlog.tags.split(',').map(tag => tag.trim())
-            }
-          : b
-      ));
-      setNewBlog({
-        title: "",
-        author: "",
-        category: "Development",
-        tags: "",
-        content: "",
-        image: "",
-        published: false
-      });
-      setEditingBlog(null);
-      setShowAddModal(false);
+  const handleEditPost = async () => {
+    try {
+      await blogService.updateBlogPost(selectedPost._id, selectedPost);
+      setShowEditModal(false);
+      setSelectedPost(null);
+      // Refresh the blog posts list
+      const response = await blogService.getAllBlogPosts();
+      setBlogPosts(Array.isArray(response.data.data) ? response.data.data : []);
+      alert('Blog post updated successfully!');
+    } catch (err) {
+      console.error('Error updating blog post:', err);
+      alert('Failed to update blog post. Please try again.');
     }
   };
 
-  const handleDeleteBlog = (id) => {
+  const handleDeletePost = async (id) => {
     if (window.confirm("Are you sure you want to delete this blog post?")) {
-      setBlogs(blogs.filter(b => b.id !== id));
+      try {
+        await blogService.deleteBlogPost(id);
+        setBlogPosts(blogPosts.filter(post => post._id !== id));
+        alert('Blog post deleted successfully!');
+      } catch (err) {
+        console.error('Error deleting blog post:', err);
+        alert('Failed to delete blog post. Please try again.');
+      }
+    }
+  };
+
+  const handleToggleFeatured = async (id, currentStatus) => {
+    try {
+      await blogService.toggleFeatured(id);
+      setBlogPosts(blogPosts.map(post => 
+        post._id === id ? { ...post, isFeatured: !currentStatus } : post
+      ));
+    } catch (err) {
+      console.error('Error toggling featured status:', err);
+      alert('Failed to update featured status. Please try again.');
+    }
+  };
+
+  const handleTogglePublish = async (id, currentStatus) => {
+    try {
+      await blogService.togglePublish(id);
+      setBlogPosts(blogPosts.map(post => 
+        post._id === id ? { ...post, isPublished: !currentStatus } : post
+      ));
+    } catch (err) {
+      console.error('Error toggling publish status:', err);
+      alert('Failed to update publish status. Please try again.');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "published": return "bg-green-100 text-green-800";
+      case "draft": return "bg-yellow-100 text-yellow-800";
+      case "archived": return "bg-gray-100 text-gray-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getCategoryColor = (category) => {
+    switch (category) {
+      case "web-development": return "bg-blue-100 text-blue-800";
+      case "mobile-development": return "bg-purple-100 text-purple-800";
+      case "ui-ux-design": return "bg-pink-100 text-pink-800";
+      case "digital-marketing": return "bg-green-100 text-green-800";
+      case "technology": return "bg-indigo-100 text-indigo-800";
+      case "business": return "bg-orange-100 text-orange-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const stats = {
-    total: blogs.length,
-    published: blogs.filter(b => b.published).length,
-    drafts: blogs.filter(b => !b.published).length,
-    totalViews: blogs.reduce((sum, b) => sum + b.views, 0)
+    total: blogPosts.length,
+    published: blogPosts.filter(p => p.status === "published").length,
+    draft: blogPosts.filter(p => p.status === "draft").length,
+    featured: blogPosts.filter(p => p.isFeatured).length,
+    archived: blogPosts.filter(p => p.status === "archived").length,
+    totalViews: blogPosts.reduce((sum, p) => sum + (p.views || 0), 0)
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading blog posts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -196,7 +248,7 @@ const Blog = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Drafts</p>
-              <p className="text-2xl font-bold text-yellow-600">{stats.drafts}</p>
+              <p className="text-2xl font-bold text-yellow-600">{stats.draft}</p>
             </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <span className="text-2xl">📄</span>
@@ -236,7 +288,7 @@ const Blog = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Categories</option>
-              {categories.map(category => (
+              {categoryOptions.map(category => (
                 <option key={category} value={category}>{category}</option>
               ))}
             </select>
@@ -270,67 +322,70 @@ const Blog = () => {
 
       {/* Blog Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredBlogs.map((blog) => (
-          <div key={blog.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+        {filteredPosts.map((post) => (
+          <div key={post._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
             <div className="aspect-video bg-gray-200">
               <img 
-                src={blog.image} 
-                alt={blog.title}
+                src={post.featuredImage} 
+                alt={post.title}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="p-6">
               <div className="flex items-center justify-between mb-2">
                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                  blog.published 
+                  post.isPublished 
                     ? "bg-green-100 text-green-800" 
                     : "bg-yellow-100 text-yellow-800"
                 }`}>
-                  {blog.published ? "Published" : "Draft"}
+                  {post.isPublished ? "Published" : "Draft"}
                 </span>
-                <span className="text-xs text-gray-500">{blog.date}</span>
+                <span className="text-xs text-gray-500">{post.date}</span>
               </div>
               
               <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                {blog.title}
+                {post.title}
               </h3>
               
               <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                {blog.content}
+                {post.excerpt}
               </p>
               
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-gray-500">By {blog.author}</span>
-                <span className="text-sm text-gray-500">{blog.category}</span>
+                <span className="text-sm text-gray-500">By {post.author}</span>
+                <span className="text-sm text-gray-500">{post.category}</span>
               </div>
               
               <div className="flex flex-wrap gap-1 mb-4">
-                {blog.tags.slice(0, 3).map((tag, index) => (
+                {post.tags.slice(0, 3).map((tag, index) => (
                   <span key={index} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
                     {tag}
                   </span>
                 ))}
-                {blog.tags.length > 3 && (
+                {post.tags.length > 3 && (
                   <span className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
-                    +{blog.tags.length - 3}
+                    +{post.tags.length - 3}
                   </span>
                 )}
               </div>
               
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>👁️ {blog.views} views</span>
-                <span>❤️ {blog.likes} likes</span>
+                <span>👁️ {post.views || 0} views</span>
+                <span>❤️ {post.likes || 0} likes</span>
               </div>
               
               <div className="flex space-x-2">
                 <button
-                  onClick={() => handleEditBlog(blog)}
+                  onClick={() => {
+                    setSelectedPost(post);
+                    setShowEditModal(true);
+                  }}
                   className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
                   ✏️ Edit
                 </button>
                 <button
-                  onClick={() => handleDeleteBlog(blog.id)}
+                  onClick={() => handleDeletePost(post._id)}
                   className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                 >
                   🗑️ Delete
@@ -346,7 +401,7 @@ const Blog = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {editingBlog ? "Edit Blog Post" : "Write New Blog Post"}
+              {showEditModal ? "Edit Blog Post" : "Write New Blog Post"}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -356,8 +411,8 @@ const Blog = () => {
                 </label>
                 <input
                   type="text"
-                  value={newBlog.title}
-                  onChange={(e) => setNewBlog({...newBlog, title: e.target.value})}
+                  value={newPost.title}
+                  onChange={(e) => setNewPost({...newPost, title: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter post title"
                 />
@@ -369,8 +424,8 @@ const Blog = () => {
                 </label>
                 <input
                   type="text"
-                  value={newBlog.author}
-                  onChange={(e) => setNewBlog({...newBlog, author: e.target.value})}
+                  value={newPost.author}
+                  onChange={(e) => setNewPost({...newPost, author: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter author name"
                 />
@@ -381,11 +436,11 @@ const Blog = () => {
                   Category
                 </label>
                 <select
-                  value={newBlog.category}
-                  onChange={(e) => setNewBlog({...newBlog, category: e.target.value})}
+                  value={newPost.category}
+                  onChange={(e) => setNewPost({...newPost, category: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {categories.map(category => (
+                  {categoryOptions.map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
@@ -397,8 +452,8 @@ const Blog = () => {
                 </label>
                 <input
                   type="url"
-                  value={newBlog.image}
-                  onChange={(e) => setNewBlog({...newBlog, image: e.target.value})}
+                  value={newPost.featuredImage}
+                  onChange={(e) => setNewPost({...newPost, featuredImage: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter image URL"
                 />
@@ -410,8 +465,8 @@ const Blog = () => {
                 </label>
                 <input
                   type="text"
-                  value={newBlog.tags}
-                  onChange={(e) => setNewBlog({...newBlog, tags: e.target.value})}
+                  value={newPost.tags.join(', ')}
+                  onChange={(e) => setNewPost({...newPost, tags: e.target.value.split(',').map(tag => tag.trim())})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., React, JavaScript, Web Development"
                 />
@@ -422,8 +477,8 @@ const Blog = () => {
                   Content
                 </label>
                 <textarea
-                  value={newBlog.content}
-                  onChange={(e) => setNewBlog({...newBlog, content: e.target.value})}
+                  value={newPost.content}
+                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
                   rows={8}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Write your blog post content here..."
@@ -434,8 +489,8 @@ const Blog = () => {
                 <label className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={newBlog.published}
-                    onChange={(e) => setNewBlog({...newBlog, published: e.target.checked})}
+                    checked={newPost.isPublished}
+                    onChange={(e) => setNewPost({...newPost, isPublished: e.target.checked})}
                     className="mr-2"
                   />
                   <span className="text-sm font-medium text-gray-700">Publish immediately</span>
@@ -445,23 +500,31 @@ const Blog = () => {
 
             <div className="flex space-x-3 mt-6">
               <button
-                onClick={editingBlog ? handleUpdateBlog : handleAddBlog}
+                onClick={showEditModal ? handleEditPost : handleAddPost}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                {editingBlog ? "Update" : "Publish"} Post
+                {showEditModal ? "Update" : "Publish"} Post
               </button>
               <button
                 onClick={() => {
                   setShowAddModal(false);
-                  setEditingBlog(null);
-                  setNewBlog({
+                  setShowEditModal(false);
+                  setSelectedPost(null);
+                  setNewPost({
                     title: "",
-                    author: "",
-                    category: "Development",
-                    tags: "",
+                    excerpt: "",
                     content: "",
-                    image: "",
-                    published: false
+                    featuredImage: "",
+                    category: "",
+                    tags: [],
+                    status: "draft",
+                    isFeatured: false,
+                    isPublished: false,
+                    seo: {
+                      metaTitle: "",
+                      metaDescription: "",
+                      keywords: []
+                    }
                   });
                 }}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

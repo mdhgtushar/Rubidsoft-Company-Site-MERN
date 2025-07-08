@@ -29,10 +29,10 @@ const ServiceDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading service details...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading web development service details...</p>
         </div>
       </div>
     );
@@ -43,16 +43,16 @@ const ServiceDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-6">
       {/* Breadcrumb Navigation */}
-      <section className="py-4 bg-gray-50 border-b border-gray-200">
+      <section className="py-4 bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600">
+          <nav className="flex items-center space-x-2 text-sm text-slate-600">
             <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <span>→</span>
             <Link to="/services" className="hover:text-blue-600 transition-colors">Services</Link>
             <span>→</span>
-            <span className="text-gray-900 font-medium">{service.title}</span>
+            <span className="text-slate-800 font-medium">{service.title}</span>
           </nav>
         </div>
       </section>
@@ -63,22 +63,22 @@ const ServiceDetails = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Side - Service Image/Icon */}
             <div className="relative">
-              <div className="bg-white rounded-3xl p-12 shadow-2xl border border-gray-100">
-                <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center text-6xl mx-auto mb-8 shadow-lg">
+              <div className="bg-white rounded-3xl p-12 shadow-2xl border border-slate-100">
+                <div className="w-32 h-32 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center text-6xl mx-auto mb-8 shadow-lg">
                   {service.icon}
                 </div>
                 <div className="text-center">
-                  <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold mb-4">
+                  <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 rounded-full text-sm font-semibold mb-4">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     Available Now
                   </div>
-                  <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
+                  <div className="flex items-center justify-center space-x-4 text-sm text-slate-600">
                     <div className="flex items-center">
                       <span className="text-yellow-400">★★★★★</span>
                       <span className="ml-1">4.9/5</span>
                     </div>
                     <span>•</span>
-                    <span>100+ Projects Completed</span>
+                    <span>100+ Web Projects Completed</span>
                     <span>•</span>
                     <span>24/7 Support</span>
                   </div>
@@ -86,10 +86,10 @@ const ServiceDetails = () => {
               </div>
               
               {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+              <div className="absolute -top-4 -right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse shadow-lg">
                 HOT SALE
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+              <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
                 TRENDING
               </div>
             </div>
@@ -97,47 +97,47 @@ const ServiceDetails = () => {
             {/* Right Side - Service Info */}
             <div>
               <div className="mb-6">
-                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full mb-4">
+                <span className="inline-block px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-sm font-semibold rounded-full mb-4">
                   {service.category}
                 </span>
-                <h1 className="text-5xl font-black text-gray-900 mb-4 leading-tight">
+                <h1 className="text-5xl font-black text-slate-800 mb-4 leading-tight">
                   {service.title}
                 </h1>
-                <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                <p className="text-xl text-slate-600 mb-6 leading-relaxed">
                   {service.description}
                 </p>
                 
                 {/* Social Proof */}
                 <div className="flex items-center space-x-6 mb-6">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">500+</div>
-                    <div className="text-sm text-gray-600">Happy Clients</div>
+                    <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">500+</div>
+                    <div className="text-sm text-slate-600">Happy Clients</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">1000+</div>
-                    <div className="text-sm text-gray-600">Projects Delivered</div>
+                    <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">1000+</div>
+                    <div className="text-sm text-slate-600">Web Projects Delivered</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">99%</div>
-                    <div className="text-sm text-gray-600">Success Rate</div>
+                    <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">99%</div>
+                    <div className="text-sm text-slate-600">Success Rate</div>
                   </div>
                 </div>
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-lg">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm text-gray-600">Starting Price</div>
+                        <div className="text-sm text-slate-600">Starting Price</div>
                         <div className="text-2xl font-bold text-green-600">{service.pricing.basic.price}</div>
                       </div>
                       <div className="text-3xl">💰</div>
                     </div>
                   </div>
-                  <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-lg">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm text-gray-600">Delivery Time</div>
+                        <div className="text-sm text-slate-600">Delivery Time</div>
                         <div className="text-2xl font-bold text-blue-600">{service.timeline}</div>
                       </div>
                       <div className="text-3xl">⚡</div>
@@ -149,20 +149,20 @@ const ServiceDetails = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link
                     to={`/services/${serviceId}/order?tier=${selectedPricing}`}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-center text-lg"
+                    className="flex-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-4 px-8 rounded-2xl font-bold hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-center text-lg"
                   >
                     🚀 Get Started Now
                   </Link>
                   <button
                     onClick={() => setShowVideo(true)}
-                    className="flex-1 border-2 border-blue-600 text-blue-600 py-4 px-8 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition-all duration-300 text-center text-lg"
+                    className="flex-1 border-2 border-blue-600 text-blue-600 py-4 px-8 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition-all duration-300 text-center text-lg"
                   >
                     ▶️ Watch Demo
                   </button>
                 </div>
 
                 {/* Trust Indicators */}
-                <div className="flex items-center justify-center space-x-6 mt-6 text-sm text-gray-600">
+                <div className="flex items-center justify-center space-x-6 mt-6 text-sm text-slate-600">
                   <div className="flex items-center">
                     <span className="text-green-500 mr-1">✓</span>
                     Free Consultation
@@ -185,17 +185,17 @@ const ServiceDetails = () => {
       {/* Video Modal */}
       {showVideo && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full">
+          <div className="bg-white rounded-3xl p-6 max-w-4xl w-full shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Service Demo</h3>
+              <h3 className="text-xl font-bold text-slate-800">Web Development Service Demo</h3>
               <button
                 onClick={() => setShowVideo(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-slate-500 hover:text-slate-700 text-2xl"
               >
                 ×
               </button>
             </div>
-            <div className="aspect-video bg-gray-200 rounded-xl flex items-center justify-center">
+            <div className="aspect-video bg-gradient-to-br from-slate-100 to-blue-100 rounded-2xl flex items-center justify-center">
               <div className="text-center">
                 <div className="text-6xl mb-4">🎥</div>
                 <p className="text-gray-600">Demo video would be embedded here</p>

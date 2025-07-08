@@ -1,75 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { orderService } from "../../services/apiService";
 
 const Orders = () => {
-  const [orders, setOrders] = useState([
-    {
-      id: "ORD-001",
-      customerName: "John Doe",
-      customerEmail: "john@example.com",
-      service: "Website Development",
-      amount: 2500,
-      status: "Pending",
-      orderDate: "2024-01-15",
-      dueDate: "2024-02-15",
-      paymentStatus: "Paid",
-      priority: "High",
-      description: "E-commerce website with payment integration"
-    },
-    {
-      id: "ORD-002",
-      customerName: "Jane Smith",
-      customerEmail: "jane@example.com",
-      service: "Mobile App Development",
-      amount: 5000,
-      status: "In Progress",
-      orderDate: "2024-01-12",
-      dueDate: "2024-03-12",
-      paymentStatus: "Partial",
-      priority: "Medium",
-      description: "React Native app for food delivery"
-    },
-    {
-      id: "ORD-003",
-      customerName: "Mike Johnson",
-      customerEmail: "mike@example.com",
-      service: "SaaS Development",
-      amount: 15000,
-      status: "Completed",
-      orderDate: "2023-12-20",
-      dueDate: "2024-01-20",
-      paymentStatus: "Paid",
-      priority: "High",
-      description: "Project management SaaS platform"
-    },
-    {
-      id: "ORD-004",
-      customerName: "Sarah Wilson",
-      customerEmail: "sarah@example.com",
-      service: "Bug Fixing",
-      amount: 500,
-      status: "Completed",
-      orderDate: "2024-01-10",
-      dueDate: "2024-01-12",
-      paymentStatus: "Paid",
-      priority: "Low",
-      description: "Fix responsive design issues"
-    }
-  ]);
-
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("all");
 
-  const statusOptions = ["Pending", "In Progress", "Completed", "Cancelled"];
-  const paymentStatusOptions = ["Paid", "Partial", "Pending", "Failed"];
+  const statusOptions = ["pending", "confirmed", "in-progress", "completed", "cancelled"];
+  const paymentStatusOptions = ["paid", "partial", "pending", "failed"];
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await orderService.getAllOrders();
+        setOrders(Array.isArray(response.data.data) ? response.data.data : []);
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        setError('Failed to load orders. Please try again.');
+        setOrders([]); // Defensive fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.customerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.service?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order._id?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === "all" || order.status === selectedStatus;
     const matchesPaymentStatus = selectedPaymentStatus === "all" || order.paymentStatus === selectedPaymentStatus;
     return matchesSearch && matchesStatus && matchesPaymentStatus;
@@ -77,43 +45,55 @@ const Orders = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Completed": return "bg-green-100 text-green-800";
-      case "In Progress": return "bg-blue-100 text-blue-800";
-      case "Pending": return "bg-yellow-100 text-yellow-800";
-      case "Cancelled": return "bg-red-100 text-red-800";
+      case "completed": return "bg-green-100 text-green-800";
+      case "in-progress": return "bg-blue-100 text-blue-800";
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      case "cancelled": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPaymentStatusColor = (status) => {
     switch (status) {
-      case "Paid": return "bg-green-100 text-green-800";
-      case "Partial": return "bg-orange-100 text-orange-800";
-      case "Pending": return "bg-yellow-100 text-yellow-800";
-      case "Failed": return "bg-red-100 text-red-800";
+      case "paid": return "bg-green-100 text-green-800";
+      case "partial": return "bg-orange-100 text-orange-800";
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      case "failed": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case "High": return "bg-red-100 text-red-800";
-      case "Medium": return "bg-orange-100 text-orange-800";
-      case "Low": return "bg-green-100 text-green-800";
+      case "high": return "bg-red-100 text-red-800";
+      case "medium": return "bg-orange-100 text-orange-800";
+      case "low": return "bg-green-100 text-green-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, status: newStatus } : order
-    ));
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await orderService.updateOrderStatus(id, newStatus);
+      setOrders(orders.map(order => 
+        order._id === id ? { ...order, status: newStatus } : order
+      ));
+    } catch (err) {
+      console.error('Error updating order status:', err);
+      alert('Failed to update order status. Please try again.');
+    }
   };
 
-  const handlePaymentStatusChange = (id, newPaymentStatus) => {
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, paymentStatus: newPaymentStatus } : order
-    ));
+  const handlePaymentStatusChange = async (id, newPaymentStatus) => {
+    try {
+      await orderService.updateOrder(id, { paymentStatus: newPaymentStatus });
+      setOrders(orders.map(order => 
+        order._id === id ? { ...order, paymentStatus: newPaymentStatus } : order
+      ));
+    } catch (err) {
+      console.error('Error updating payment status:', err);
+      alert('Failed to update payment status. Please try again.');
+    }
   };
 
   const handleViewDetails = (order) => {
@@ -123,12 +103,40 @@ const Orders = () => {
 
   const stats = {
     total: orders.length,
-    pending: orders.filter(o => o.status === "Pending").length,
-    inProgress: orders.filter(o => o.status === "In Progress").length,
-    completed: orders.filter(o => o.status === "Completed").length,
-    totalRevenue: orders.reduce((sum, o) => sum + o.amount, 0),
-    paidRevenue: orders.filter(o => o.paymentStatus === "Paid").reduce((sum, o) => sum + o.amount, 0)
+    pending: orders.filter(o => o.status === "pending").length,
+    inProgress: orders.filter(o => o.status === "in-progress").length,
+    completed: orders.filter(o => o.status === "completed").length,
+    totalRevenue: orders.reduce((sum, o) => sum + (o.pricing?.totalPrice || 0), 0),
+    paidRevenue: orders.filter(o => o.paymentStatus === "paid").reduce((sum, o) => sum + (o.pricing?.totalPrice || 0), 0)
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading orders...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -308,27 +316,27 @@ const Orders = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
+                <tr key={order._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{order.id}</div>
+                      <div className="text-sm font-medium text-gray-900">{order._id}</div>
                       <div className="text-sm text-gray-500">{order.orderDate}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
-                      <div className="text-sm text-gray-500">{order.customerEmail}</div>
+                      <div className="text-sm font-medium text-gray-900">{order.customer?.name}</div>
+                      <div className="text-sm text-gray-500">{order.customer?.email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{order.service}</div>
+                      <div className="text-sm font-medium text-gray-900">{order.service?.title}</div>
                       <div className="text-sm text-gray-500 line-clamp-2">{order.description}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${order.amount.toLocaleString()}</div>
+                    <div className="text-sm font-medium text-gray-900">${order.pricing?.totalPrice.toLocaleString()}</div>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(order.priority)}`}>
                       {order.priority}
                     </span>
@@ -336,7 +344,7 @@ const Orders = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
                       className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border-0 ${getStatusColor(order.status)}`}
                     >
                       {statusOptions.map(status => (
@@ -347,7 +355,7 @@ const Orders = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={order.paymentStatus}
-                      onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
+                      onChange={(e) => handlePaymentStatusChange(order._id, e.target.value)}
                       className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border-0 ${getPaymentStatusColor(order.paymentStatus)}`}
                     >
                       {paymentStatusOptions.map(status => (
@@ -396,7 +404,7 @@ const Orders = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Order ID</label>
-                  <p className="text-sm text-gray-900">{selectedOrder.id}</p>
+                  <p className="text-sm text-gray-900">{selectedOrder._id}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Order Date</label>
@@ -404,19 +412,19 @@ const Orders = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
-                  <p className="text-sm text-gray-900">{selectedOrder.customerName}</p>
+                  <p className="text-sm text-gray-900">{selectedOrder.customer?.name}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Customer Email</label>
-                  <p className="text-sm text-gray-900">{selectedOrder.customerEmail}</p>
+                  <p className="text-sm text-gray-900">{selectedOrder.customer?.email}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Service</label>
-                  <p className="text-sm text-gray-900">{selectedOrder.service}</p>
+                  <p className="text-sm text-gray-900">{selectedOrder.service?.title}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                  <p className="text-sm font-medium text-gray-900">${selectedOrder.amount.toLocaleString()}</p>
+                  <p className="text-sm font-medium text-gray-900">${selectedOrder.pricing?.totalPrice.toLocaleString()}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
@@ -443,7 +451,7 @@ const Orders = () => {
                   <select
                     value={selectedOrder.status}
                     onChange={(e) => {
-                      handleStatusChange(selectedOrder.id, e.target.value);
+                      handleStatusChange(selectedOrder._id, e.target.value);
                       setSelectedOrder({...selectedOrder, status: e.target.value});
                     }}
                     className="mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -458,7 +466,7 @@ const Orders = () => {
                   <select
                     value={selectedOrder.paymentStatus}
                     onChange={(e) => {
-                      handlePaymentStatusChange(selectedOrder.id, e.target.value);
+                      handlePaymentStatusChange(selectedOrder._id, e.target.value);
                       setSelectedOrder({...selectedOrder, paymentStatus: e.target.value});
                     }}
                     className="mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -473,7 +481,7 @@ const Orders = () => {
             
             <div className="flex space-x-3 mt-6">
               <button
-                onClick={() => window.open(`mailto:${selectedOrder.customerEmail}?subject=Order Update - ${selectedOrder.id}`, '_blank')}
+                onClick={() => window.open(`mailto:${selectedOrder.customer?.email}?subject=Order Update - ${selectedOrder._id}`, '_blank')}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 📧 Send Update Email

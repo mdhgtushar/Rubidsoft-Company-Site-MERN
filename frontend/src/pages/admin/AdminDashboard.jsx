@@ -1,50 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { dashboardService, orderService, contactService, taskService } from "../../services/apiService";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
-    totalClients: 156,
-    totalProjects: 89,
-    totalRevenue: 245000,
-    pendingTasks: 12,
-    activeServices: 8,
-    totalOrders: 234
+    totalClients: 0,
+    totalProjects: 0,
+    totalRevenue: 0,
+    pendingTasks: 0,
+    activeServices: 0,
+    totalOrders: 0
   });
 
-  const [recentActivities, setRecentActivities] = useState([
-    {
-      id: 1,
-      type: "new_client",
-      message: "New client registration: TechStart Inc.",
-      time: "2 hours ago",
-      icon: "👤",
-      color: "bg-blue-500"
-    },
-    {
-      id: 2,
-      type: "project_completed",
-      message: "E-commerce website project completed",
-      time: "4 hours ago",
-      icon: "✅",
-      color: "bg-green-500"
-    },
-    {
-      id: 3,
-      type: "new_order",
-      message: "New order received: SaaS Development",
-      time: "6 hours ago",
-      icon: "💰",
-      color: "bg-purple-500"
-    },
-    {
-      id: 4,
-      type: "task_assigned",
-      message: "Bug fixing task assigned to John Doe",
-      time: "8 hours ago",
-      icon: "🔧",
-      color: "bg-orange-500"
-    }
-  ]);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [quickActions] = useState([
     {
@@ -76,6 +46,113 @@ const AdminDashboard = () => {
       color: "bg-orange-500 hover:bg-orange-600"
     }
   ]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        // Fetch dashboard stats
+        const dashboardStats = await dashboardService.getDashboardStats();
+        // Fetch recent data for activities
+        const [recentOrders, recentContacts, recentTasks] = await Promise.all([
+          orderService.getAllOrders({ limit: 3, sort: '-createdAt' }),
+          contactService.getAllContacts({ limit: 3, sort: '-createdAt' }),
+          taskService.getAllTasks({ limit: 3, sort: '-createdAt' })
+        ]);
+        // Defensive assignments
+        setStats({
+          totalClients: dashboardStats.contacts?.total || 0,
+          totalProjects: dashboardStats.projects?.total || 0,
+          totalRevenue: dashboardStats.orders?.totalRevenue || 0,
+          pendingTasks: dashboardStats.tasks?.pending || 0,
+          activeServices: dashboardStats.services?.active || 0,
+          totalOrders: dashboardStats.orders?.total || 0
+        });
+        // Defensive: always set to array
+        const ordersArr = Array.isArray(recentOrders.data?.data) ? recentOrders.data.data : [];
+        const contactsArr = Array.isArray(recentContacts.data?.data) ? recentContacts.data.data : [];
+        const tasksArr = Array.isArray(recentTasks.data?.data) ? recentTasks.data.data : [];
+        // Create recent activities from real data
+        const activities = [];
+        ordersArr.forEach(order => {
+          activities.push({
+            id: order._id,
+            type: "new_order",
+            message: `New order received: ${order.service?.title || 'Service'}`,
+            time: new Date(order.createdAt).toLocaleDateString(),
+            icon: "💰",
+            color: "bg-purple-500"
+          });
+        });
+        contactsArr.forEach(contact => {
+          activities.push({
+            id: contact._id,
+            type: "new_contact",
+            message: `New inquiry from: ${contact.name}`,
+            time: new Date(contact.createdAt).toLocaleDateString(),
+            icon: "📧",
+            color: "bg-blue-500"
+          });
+        });
+        tasksArr.forEach(task => {
+          activities.push({
+            id: task._id,
+            type: "task_assigned",
+            message: `Task assigned: ${task.title}`,
+            time: new Date(task.createdAt).toLocaleDateString(),
+            icon: "🔧",
+            color: "bg-orange-500"
+          });
+        });
+        activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+        setRecentActivities(activities.slice(0, 4));
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        setError('Failed to load dashboard data. Please try again.');
+        setStats({
+          totalClients: 0,
+          totalProjects: 0,
+          totalRevenue: 0,
+          pendingTasks: 0,
+          activeServices: 0,
+          totalOrders: 0
+        });
+        setRecentActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

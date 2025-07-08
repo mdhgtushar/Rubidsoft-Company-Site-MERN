@@ -1,172 +1,208 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { taskService, userService } from "../../services/apiService";
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Design Homepage",
-      description: "Create modern homepage UI with responsive design",
-      status: "In Progress",
-      priority: "High",
-      assignee: "John Doe",
-      dueDate: "2024-01-15",
-      category: "Design",
-      progress: 75
-    },
-    {
-      id: 2,
-      title: "API Integration",
-      description: "Integrate backend APIs for user authentication",
-      status: "Completed",
-      priority: "Medium",
-      assignee: "Jane Smith",
-      dueDate: "2024-01-10",
-      category: "Development",
-      progress: 100
-    },
-    {
-      id: 3,
-      title: "Database Optimization",
-      description: "Optimize database queries and indexes",
-      status: "Pending",
-      priority: "Low",
-      assignee: "Mike Johnson",
-      dueDate: "2024-01-20",
-      category: "Backend",
-      progress: 0
-    },
-    {
-      id: 4,
-      title: "Mobile App Testing",
-      description: "Perform comprehensive testing on mobile app",
-      status: "In Progress",
-      priority: "High",
-      assignee: "Sarah Wilson",
-      dueDate: "2024-01-18",
-      category: "Testing",
-      progress: 45
-    }
-  ]);
-
+  const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedPriority, setSelectedPriority] = useState("all");
+  const [selectedAssignee, setSelectedAssignee] = useState("all");
 
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    status: "Pending",
-    priority: "Medium",
-    assignee: "",
+    priority: "medium",
+    status: "pending",
+    assignedTo: "",
     dueDate: "",
-    category: "Development"
+    estimatedHours: 0,
+    tags: []
   });
 
-  const statusOptions = ["Pending", "In Progress", "Completed"];
-  const priorityOptions = ["Low", "Medium", "High"];
-  const categories = ["Design", "Development", "Backend", "Frontend", "Testing", "Deployment"];
+  const statusOptions = ["pending", "assigned", "in-progress", "completed", "cancelled"];
+  const priorityOptions = ["low", "medium", "high", "urgent"];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch tasks and users in parallel
+        const [tasksResponse, usersResponse] = await Promise.all([
+          taskService.getAllTasks(),
+          userService.getAllUsers()
+        ]);
+        
+        setTasks(Array.isArray(tasksResponse.data.data) ? tasksResponse.data.data : []);
+        setUsers(Array.isArray(usersResponse.data.data) ? usersResponse.data.data : []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load data. Please try again.');
+        setTasks([]); // Defensive fallback
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.assignee.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = selectedStatus === "all" || task.status === selectedStatus;
     const matchesPriority = selectedPriority === "all" || task.priority === selectedPriority;
-    return matchesSearch && matchesStatus && matchesPriority;
+    const matchesAssignee = selectedAssignee === "all" || task.assignedTo === selectedAssignee;
+    return matchesSearch && matchesStatus && matchesPriority && matchesAssignee;
   });
+
+  const handleAddTask = async () => {
+    try {
+      await taskService.createTask(newTask);
+      setShowAddModal(false);
+      setNewTask({
+        title: "",
+        description: "",
+        priority: "medium",
+        status: "pending",
+        assignedTo: "",
+        dueDate: "",
+        estimatedHours: 0,
+        tags: []
+      });
+      // Refresh the tasks list
+      const response = await taskService.getAllTasks();
+      setTasks(Array.isArray(response.data.data) ? response.data.data : []);
+      alert('Task added successfully!');
+    } catch (err) {
+      console.error('Error adding task:', err);
+      alert('Failed to add task. Please try again.');
+    }
+  };
+
+  const handleEditTask = async () => {
+    try {
+      await taskService.updateTask(selectedTask._id, selectedTask);
+      setShowEditModal(false);
+      setSelectedTask(null);
+      // Refresh the tasks list
+      const response = await taskService.getAllTasks();
+      setTasks(Array.isArray(response.data.data) ? response.data.data : []);
+      alert('Task updated successfully!');
+    } catch (err) {
+      console.error('Error updating task:', err);
+      alert('Failed to update task. Please try again.');
+    }
+  };
+
+  const handleDeleteTask = async (id) => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        await taskService.deleteTask(id);
+        setTasks(tasks.filter(task => task._id !== id));
+        alert('Task deleted successfully!');
+      } catch (err) {
+        console.error('Error deleting task:', err);
+        alert('Failed to delete task. Please try again.');
+      }
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await taskService.updateTaskStatus(id, newStatus);
+      setTasks(tasks.map(task => 
+        task._id === id ? { ...task, status: newStatus } : task
+      ));
+    } catch (err) {
+      console.error('Error updating task status:', err);
+      alert('Failed to update task status. Please try again.');
+    }
+  };
+
+  const handleAssignTask = async (id, assignedTo) => {
+    try {
+      await taskService.assignTask(id, assignedTo);
+      setTasks(tasks.map(task => 
+        task._id === id ? { ...task, assignedTo } : task
+      ));
+    } catch (err) {
+      console.error('Error assigning task:', err);
+      alert('Failed to assign task. Please try again.');
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Completed": return "bg-green-100 text-green-800";
-      case "In Progress": return "bg-blue-100 text-blue-800";
-      case "Pending": return "bg-yellow-100 text-yellow-800";
+      case "completed": return "bg-green-100 text-green-800";
+      case "in-progress": return "bg-blue-100 text-blue-800";
+      case "assigned": return "bg-yellow-100 text-yellow-800";
+      case "pending": return "bg-gray-100 text-gray-800";
+      case "cancelled": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case "High": return "bg-red-100 text-red-800";
-      case "Medium": return "bg-orange-100 text-orange-800";
-      case "Low": return "bg-green-100 text-green-800";
+      case "urgent": return "bg-red-100 text-red-800";
+      case "high": return "bg-orange-100 text-orange-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-green-100 text-green-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
 
-  const handleAddTask = () => {
-    if (newTask.title && newTask.description) {
-      const task = {
-        id: tasks.length + 1,
-        ...newTask,
-        progress: newTask.status === "Completed" ? 100 : newTask.status === "In Progress" ? 50 : 0
-      };
-      setTasks([...tasks, task]);
-      setNewTask({
-        title: "",
-        description: "",
-        status: "Pending",
-        priority: "Medium",
-        assignee: "",
-        dueDate: "",
-        category: "Development"
-      });
-      setShowAddModal(false);
-    }
-  };
-
-  const handleEditTask = (task) => {
-    setEditingTask(task);
-    setNewTask({
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
-      assignee: task.assignee,
-      dueDate: task.dueDate,
-      category: task.category
-    });
-    setShowAddModal(true);
-  };
-
-  const handleUpdateTask = () => {
-    if (editingTask && newTask.title && newTask.description) {
-      setTasks(tasks.map(t => 
-        t.id === editingTask.id 
-          ? { 
-              ...t, 
-              ...newTask,
-              progress: newTask.status === "Completed" ? 100 : newTask.status === "In Progress" ? 50 : 0
-            }
-          : t
-      ));
-      setNewTask({
-        title: "",
-        description: "",
-        status: "Pending",
-        priority: "Medium",
-        assignee: "",
-        dueDate: "",
-        category: "Development"
-      });
-      setEditingTask(null);
-      setShowAddModal(false);
-    }
-  };
-
-  const handleDeleteTask = (id) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      setTasks(tasks.filter(t => t.id !== id));
-    }
+  const getUserName = (userId) => {
+    const user = users.find(u => u._id === userId);
+    return user ? user.name : 'Unassigned';
   };
 
   const stats = {
     total: tasks.length,
-    completed: tasks.filter(t => t.status === "Completed").length,
-    inProgress: tasks.filter(t => t.status === "In Progress").length,
-    pending: tasks.filter(t => t.status === "Pending").length
+    pending: tasks.filter(t => t.status === "pending").length,
+    inProgress: tasks.filter(t => t.status === "in-progress").length,
+    completed: tasks.filter(t => t.status === "completed").length,
+    overdue: tasks.filter(t => new Date(t.dueDate) < new Date() && t.status !== "completed").length,
+    urgent: tasks.filter(t => t.priority === "urgent").length
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading tasks...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -318,22 +354,22 @@ const Tasks = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredTasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50">
+                <tr key={task._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div>
                       <div className="text-sm font-medium text-gray-900">{task.title}</div>
                       <div className="text-sm text-gray-500">{task.description}</div>
-                      <div className="text-xs text-gray-400 mt-1">Category: {task.category}</div>
+                      <div className="text-xs text-gray-400 mt-1">Category: {task.tags?.join(', ')}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
                         <span className="text-xs font-medium text-gray-600">
-                          {task.assignee.split(' ').map(n => n[0]).join('')}
+                          {getUserName(task.assignedTo)?.split(' ').map(n => n[0]).join('')}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-900">{task.assignee}</span>
+                      <span className="text-sm text-gray-900">{getUserName(task.assignedTo) || 'Unassigned'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -351,8 +387,8 @@ const Tasks = () => {
                       <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
                         <div 
                           className={`h-2 rounded-full ${
-                            task.progress === 100 ? 'bg-green-500' : 
-                            task.progress > 50 ? 'bg-blue-500' : 'bg-yellow-500'
+                            task.status === "completed" ? 'bg-green-500' : 
+                            task.status === "in-progress" ? 'bg-blue-500' : 'bg-yellow-500'
                           }`}
                           style={{ width: `${task.progress}%` }}
                         ></div>
@@ -366,17 +402,36 @@ const Tasks = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => handleEditTask(task)}
+                        onClick={() => {
+                          setSelectedTask(task);
+                          setShowEditModal(true);
+                        }}
                         className="text-blue-600 hover:text-blue-900"
                       >
                         ✏️ Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteTask(task.id)}
+                        onClick={() => handleDeleteTask(task._id)}
                         className="text-red-600 hover:text-red-900"
                       >
                         🗑️ Delete
                       </button>
+                      {task.status !== "completed" && (
+                        <button
+                          onClick={() => handleStatusChange(task._id, "completed")}
+                          className="text-green-600 hover:text-green-900"
+                        >
+                          ✅ Complete
+                        </button>
+                      )}
+                      {task.assignedTo === "unassigned" && (
+                        <button
+                          onClick={() => handleAssignTask(task._id, "unassigned")}
+                          className="text-yellow-600 hover:text-yellow-900"
+                        >
+                          👤 Assign
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -391,7 +446,7 @@ const Tasks = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {editingTask ? "Edit Task" : "Add New Task"}
+              {showEditModal ? "Edit Task" : "Add New Task"}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,13 +467,16 @@ const Tasks = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Assignee
                 </label>
-                <input
-                  type="text"
-                  value={newTask.assignee}
-                  onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
+                <select
+                  value={newTask.assignedTo}
+                  onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter assignee name"
-                />
+                >
+                  <option value="">Select Assignee</option>
+                  {users.map(user => (
+                    <option key={user._id} value={user._id}>{user.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -453,21 +511,6 @@ const Tasks = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <select
-                  value={newTask.category}
-                  onChange={(e) => setNewTask({...newTask, category: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Due Date
                 </label>
                 <input
@@ -494,23 +537,25 @@ const Tasks = () => {
 
             <div className="flex space-x-3 mt-6">
               <button
-                onClick={editingTask ? handleUpdateTask : handleAddTask}
+                onClick={showEditModal ? handleEditTask : handleAddTask}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                {editingTask ? "Update" : "Add"} Task
+                {showEditModal ? "Update" : "Add"} Task
               </button>
               <button
                 onClick={() => {
                   setShowAddModal(false);
-                  setEditingTask(null);
+                  setShowEditModal(false);
+                  setSelectedTask(null);
                   setNewTask({
                     title: "",
                     description: "",
-                    status: "Pending",
-                    priority: "Medium",
-                    assignee: "",
+                    priority: "medium",
+                    status: "pending",
+                    assignedTo: "",
                     dueDate: "",
-                    category: "Development"
+                    estimatedHours: 0,
+                    tags: []
                   });
                 }}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

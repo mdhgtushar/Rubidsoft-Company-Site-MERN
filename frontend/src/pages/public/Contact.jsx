@@ -180,26 +180,26 @@ const Contact = () => {
   };
 
   return (
-    <div className="py-8">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">Get In Touch</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">Get In Touch</h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Ready to start your project? Contact us today and let's discuss how we can help bring your vision to life.
+            Ready to start your web development project? Contact us today and let's discuss how we can help bring your vision to life.
           </p>
         </div>
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex items-center">
+          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-2xl flex items-center shadow-lg">
             <CheckCircle className="w-5 h-5 mr-2" />
             {success}
           </div>
         )}
         
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center">
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl flex items-center shadow-lg">
             <AlertCircle className="w-5 h-5 mr-2" />
             {error}
           </div>
@@ -207,17 +207,17 @@ const Contact = () => {
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Send Us a Message</h2>
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">Send Us a Message</h2>
             
             {/* Free Consultation Banner */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-6 mb-6">
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl p-6 mb-6 shadow-lg">
               <div className="flex items-center space-x-3 mb-3">
                 <span className="text-2xl">🎁</span>
                 <h3 className="text-xl font-bold">Free 3-Hour Consultation</h3>
               </div>
               <p className="text-blue-100 mb-4">
-                Get expert advice on your project requirements, technology stack, and implementation strategy. 
+                Get expert advice on your web development project requirements, technology stack, and implementation strategy. 
                 No strings attached!
               </p>
               <div className="flex items-center space-x-2">
@@ -237,7 +237,7 @@ const Contact = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                     placeholder="Enter your full name"
                     required
                   />
@@ -252,7 +252,7 @@ const Contact = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                     placeholder="Enter your email address"
                     required
                   />
@@ -269,7 +269,7 @@ const Contact = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                     placeholder="Enter your phone number"
                   />
                 </div>
@@ -283,7 +283,7 @@ const Contact = () => {
                     name="company"
                     value={formData.company}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                     placeholder="Enter your company name"
                   />
                 </div>
@@ -298,7 +298,7 @@ const Contact = () => {
                     name="service"
                     value={formData.service}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   >
                     <option value="">Select a service</option>
                     {services.map((service, index) => (
@@ -315,7 +315,7 @@ const Contact = () => {
                     name="projectType"
                     value={formData.projectType}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   >
                     <option value="">Select project type</option>
                     {projectTypes.map((type, index) => (
@@ -334,7 +334,7 @@ const Contact = () => {
                     name="budget"
                     value={formData.budget}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   >
                     <option value="">Select budget range</option>
                     {budgetRanges.map((range, index) => (
@@ -351,7 +351,7 @@ const Contact = () => {
                     name="timeline"
                     value={formData.timeline}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   >
                     <option value="">Select timeline</option>
                     {timelines.map((time, index) => (
@@ -370,8 +370,8 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={5}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Tell us about your project, requirements, or any questions you have..."
+                  className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  placeholder="Tell us about your web development project, requirements, or any questions you have..."
                   required
                 />
               </div>
@@ -381,7 +381,7 @@ const Contact = () => {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Attachments (Optional)
                 </label>
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-blue-400 transition-colors duration-300">
                   <Upload className="mx-auto h-12 w-12 text-slate-400" />
                   <div className="mt-4">
                     <input
@@ -394,7 +394,7 @@ const Contact = () => {
                     />
                     <label
                       htmlFor="file-upload"
-                      className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                      className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg"
                     >
                       Choose Files
                     </label>
@@ -433,7 +433,7 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-2xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
               >
                 {isSubmitting ? (
                   <>
@@ -453,28 +453,28 @@ const Contact = () => {
           {/* Contact Information */}
           <div className="space-y-8">
             {/* Company Info */}
-            <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Contact Information</h2>
+            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+              <h2 className="text-2xl font-bold text-slate-800 mb-6">Contact Information</h2>
               
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-blue-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">Address</h3>
+                    <h3 className="font-semibold text-slate-800">Address</h3>
                     <p className="text-slate-600">Dhaka, Bangladesh</p>
                     <p className="text-slate-600">Serving clients worldwide</p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-blue-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Mail className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">Email</h3>
-                    <a href="mailto:info@rubidsoft.com" className="text-blue-600 hover:text-blue-700">
+                    <h3 className="font-semibold text-slate-800">Email</h3>
+                    <a href="mailto:info@rubidsoft.com" className="text-blue-600 hover:text-blue-700 font-medium">
                       info@rubidsoft.com
                     </a>
                     <p className="text-sm text-slate-500">We respond within 24 hours</p>
@@ -482,12 +482,12 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Phone className="w-5 h-5 text-blue-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Phone className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">Phone</h3>
-                    <a href="tel:+8801234567890" className="text-blue-600 hover:text-blue-700">
+                    <h3 className="font-semibold text-slate-800">Phone</h3>
+                    <a href="tel:+8801234567890" className="text-blue-600 hover:text-blue-700 font-medium">
                       +880 1234 567 890
                     </a>
                     <p className="text-sm text-slate-500">Mon-Fri, 9AM-6PM (GMT+6)</p>
@@ -495,11 +495,11 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-blue-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">Response Time</h3>
+                    <h3 className="font-semibold text-slate-800">Response Time</h3>
                     <p className="text-slate-600">Within 24 hours</p>
                     <p className="text-slate-600">Emergency support available</p>
                   </div>
@@ -508,13 +508,13 @@ const Contact = () => {
             </div>
 
             {/* Services Overview */}
-            <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Our Services</h2>
+            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+              <h2 className="text-2xl font-bold text-slate-800 mb-6">Our Web Development Services</h2>
               
               <div className="space-y-4">
                 {services.slice(0, 8).map((service, index) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
                     <span className="text-slate-700">{service}</span>
                   </div>
                 ))}
@@ -534,13 +534,13 @@ const Contact = () => {
             </div>
 
             {/* Why Choose Us */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-lg p-8">
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl p-8 shadow-xl">
               <h2 className="text-2xl font-bold mb-6">Why Choose Rubidsoft?</h2>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>Professional & Experienced Team</span>
+                  <span>Professional & Experienced Web Development Team</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-400" />
@@ -566,13 +566,13 @@ const Contact = () => {
             </div>
 
             {/* Quick Contact */}
-            <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Quick Contact</h2>
+            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+              <h2 className="text-2xl font-bold text-slate-800 mb-6">Quick Contact</h2>
               
               <div className="space-y-4">
                 <a
                   href="mailto:info@rubidsoft.com"
-                  className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 border border-blue-100"
                 >
                   <Mail className="w-5 h-5 text-blue-600" />
                   <span className="text-blue-600 font-medium">Send Email</span>
@@ -580,7 +580,7 @@ const Contact = () => {
                 
                 <a
                   href="tel:+8801234567890"
-                  className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl hover:from-green-100 hover:to-emerald-100 transition-all duration-300 border border-green-100"
                 >
                   <Phone className="w-5 h-5 text-green-600" />
                   <span className="text-green-600 font-medium">Call Now</span>
@@ -588,7 +588,7 @@ const Contact = () => {
                 
                 <a
                   href="/order-form"
-                  className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl hover:from-purple-100 hover:to-pink-100 transition-all duration-300 border border-purple-100"
                 >
                   <MessageSquare className="w-5 h-5 text-purple-600" />
                   <span className="text-purple-600 font-medium">Place Order</span>

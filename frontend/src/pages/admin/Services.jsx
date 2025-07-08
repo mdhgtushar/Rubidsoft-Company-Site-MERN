@@ -1,197 +1,185 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { serviceService } from "../../services/apiService";
 
 const Services = () => {
-  const [services, setServices] = useState([
-    {
-      id: 1,
-      title: "Project Planning",
-      description: "Detailed planning and strategizing for successful project execution from concept to launch.",
-      category: "Planning",
-      price: "$500",
-      duration: "1-2 weeks",
-      status: "Active",
-      features: ["Requirements Analysis", "Timeline Creation", "Resource Planning", "Risk Assessment"],
-      icon: "📋"
-    },
-    {
-      id: 2,
-      title: "Bug Fixing & Feature Additions",
-      description: "Efficient identification and resolution of issues, along with seamless integration of new functionalities.",
-      category: "Maintenance",
-      price: "$200",
-      duration: "1-3 days",
-      status: "Active",
-      features: ["Bug Identification", "Code Review", "Testing", "Deployment"],
-      icon: "🔧"
-    },
-    {
-      id: 3,
-      title: "Backend Development",
-      description: "Building robust, scalable, and secure server-side logic and APIs for your applications.",
-      category: "Development",
-      price: "$2000",
-      duration: "2-4 weeks",
-      status: "Active",
-      features: ["API Development", "Database Design", "Security Implementation", "Performance Optimization"],
-      icon: "⚙️"
-    },
-    {
-      id: 4,
-      title: "Frontend Development",
-      description: "Crafting intuitive and visually appealing user interfaces from design mockups (PSD to HTML / HTML to React).",
-      category: "Development",
-      price: "$1500",
-      duration: "2-3 weeks",
-      status: "Active",
-      features: ["UI/UX Implementation", "Responsive Design", "Cross-browser Compatibility", "Performance Optimization"],
-      icon: "🎨"
-    },
-    {
-      id: 5,
-      title: "Website Development",
-      description: "Creating dynamic and responsive websites using popular platforms and frameworks (WordPress, MERN, PHP).",
-      category: "Development",
-      price: "$3000",
-      duration: "3-6 weeks",
-      status: "Active",
-      features: ["Custom Design", "CMS Integration", "SEO Optimization", "Mobile Responsive"],
-      icon: "🌐"
-    },
-    {
-      id: 6,
-      title: "Web App Development (MERN)",
-      description: "Developing full-fledged web applications with the MongoDB, Express.js, React, Node.js stack.",
-      category: "Development",
-      price: "$5000",
-      duration: "4-8 weeks",
-      status: "Active",
-      features: ["Full-stack Development", "Database Integration", "User Authentication", "Real-time Features"],
-      icon: "🚀"
-    },
-    {
-      id: 7,
-      title: "SaaS Development",
-      description: "Building multi-tenant, scalable Software as a Service solutions tailored to your business needs.",
-      category: "Enterprise",
-      price: "$10000",
-      duration: "8-12 weeks",
-      status: "Active",
-      features: ["Multi-tenancy", "Subscription Management", "Analytics Dashboard", "API Integration"],
-      icon: "☁️"
-    },
-    {
-      id: 8,
-      title: "WHMCS Development",
-      description: "Customizing and extending WHMCS for billing, client management, and automation.",
-      category: "Customization",
-      price: "$800",
-      duration: "1-2 weeks",
-      status: "Inactive",
-      features: ["Module Development", "API Integration", "Custom Reports", "Automation Scripts"],
-      icon: "💳"
-    }
-  ]);
-
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingService, setEditingService] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
   const [newService, setNewService] = useState({
     title: "",
+    shortDescription: "",
     description: "",
-    category: "Development",
-    price: "",
-    duration: "",
-    status: "Active",
-    features: ""
+    category: "",
+    icon: "",
+    image: "",
+    features: [],
+    pricing: {
+      basic: { name: "Basic", price: 0, features: [] },
+      professional: { name: "Professional", price: 0, features: [], popular: false },
+      enterprise: { name: "Enterprise", price: 0, features: [] }
+    },
+    isActive: true,
+    isFeatured: false,
+    order: 1
   });
 
-  const categories = ["Planning", "Development", "Maintenance", "Enterprise", "Customization"];
-  const statusOptions = ["Active", "Inactive"];
+  const categoryOptions = ["web-development", "mobile-development", "ui-ux-design", "digital-marketing", "consulting"];
+  const statusOptions = ["active", "inactive"];
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await serviceService.getAllServices();
+        setServices(Array.isArray(response.data.data) ? response.data.data : []);
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        setError('Failed to load services. Please try again.');
+        setServices([]); // Defensive fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   const filteredServices = services.filter(service => {
-    const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = service.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.shortDescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.category?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || service.category === selectedCategory;
-    const matchesStatus = selectedStatus === "all" || service.status === selectedStatus;
+    const matchesStatus = selectedStatus === "all" || (service.isActive ? "active" : "inactive") === selectedStatus;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const handleAddService = () => {
-    if (newService.title && newService.description) {
-      const service = {
-        id: services.length + 1,
-        ...newService,
-        features: newService.features.split(',').map(feature => feature.trim()),
-        icon: "📦"
-      };
-      setServices([...services, service]);
+  const handleAddService = async () => {
+    try {
+      await serviceService.createService(newService);
+      setShowAddModal(false);
       setNewService({
         title: "",
+        shortDescription: "",
         description: "",
-        category: "Development",
-        price: "",
-        duration: "",
-        status: "Active",
-        features: ""
+        category: "",
+        icon: "",
+        image: "",
+        features: [],
+        pricing: {
+          basic: { name: "Basic", price: 0, features: [] },
+          professional: { name: "Professional", price: 0, features: [], popular: false },
+          enterprise: { name: "Enterprise", price: 0, features: [] }
+        },
+        isActive: true,
+        isFeatured: false,
+        order: 1
       });
-      setShowAddModal(false);
+      // Refresh the services list
+      const response = await serviceService.getAllServices();
+      setServices(Array.isArray(response.data.data) ? response.data.data : []);
+      alert('Service added successfully!');
+    } catch (err) {
+      console.error('Error adding service:', err);
+      alert('Failed to add service. Please try again.');
     }
   };
 
-  const handleEditService = (service) => {
-    setEditingService(service);
-    setNewService({
-      title: service.title,
-      description: service.description,
-      category: service.category,
-      price: service.price,
-      duration: service.duration,
-      status: service.status,
-      features: service.features.join(', ')
-    });
-    setShowAddModal(true);
-  };
-
-  const handleUpdateService = () => {
-    if (editingService && newService.title && newService.description) {
-      setServices(services.map(s => 
-        s.id === editingService.id 
-          ? { 
-              ...s, 
-              ...newService,
-              features: newService.features.split(',').map(feature => feature.trim())
-            }
-          : s
-      ));
-      setNewService({
-        title: "",
-        description: "",
-        category: "Development",
-        price: "",
-        duration: "",
-        status: "Active",
-        features: ""
-      });
-      setEditingService(null);
-      setShowAddModal(false);
+  const handleEditService = async () => {
+    try {
+      await serviceService.updateService(selectedService._id, selectedService);
+      setShowEditModal(false);
+      setSelectedService(null);
+      // Refresh the services list
+      const response = await serviceService.getAllServices();
+      setServices(Array.isArray(response.data.data) ? response.data.data : []);
+      alert('Service updated successfully!');
+    } catch (err) {
+      console.error('Error updating service:', err);
+      alert('Failed to update service. Please try again.');
     }
   };
 
-  const handleDeleteService = (id) => {
+  const handleDeleteService = async (id) => {
     if (window.confirm("Are you sure you want to delete this service?")) {
-      setServices(services.filter(s => s.id !== id));
+      try {
+        await serviceService.deleteService(id);
+        setServices(services.filter(service => service._id !== id));
+        alert('Service deleted successfully!');
+      } catch (err) {
+        console.error('Error deleting service:', err);
+        alert('Failed to delete service. Please try again.');
+      }
+    }
+  };
+
+  const handleToggleActive = async (id, currentStatus) => {
+    try {
+      await serviceService.toggleActive(id);
+      setServices(services.map(service => 
+        service._id === id ? { ...service, isActive: !currentStatus } : service
+      ));
+    } catch (err) {
+      console.error('Error toggling service status:', err);
+      alert('Failed to update service status. Please try again.');
+    }
+  };
+
+  const handleToggleFeatured = async (id, currentStatus) => {
+    try {
+      await serviceService.toggleFeatured(id);
+      setServices(services.map(service => 
+        service._id === id ? { ...service, isFeatured: !currentStatus } : service
+      ));
+    } catch (err) {
+      console.error('Error toggling featured status:', err);
+      alert('Failed to update featured status. Please try again.');
     }
   };
 
   const stats = {
     total: services.length,
-    active: services.filter(s => s.status === "Active").length,
-    inactive: services.filter(s => s.status === "Inactive").length,
-    categories: [...new Set(services.map(s => s.category))].length
+    active: services.filter(s => s.isActive).length,
+    featured: services.filter(s => s.isFeatured).length,
+    webDevelopment: services.filter(s => s.category === "web-development").length,
+    mobileDevelopment: services.filter(s => s.category === "mobile-development").length,
+    design: services.filter(s => s.category === "ui-ux-design").length
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -280,7 +268,7 @@ const Services = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="all">All Categories</option>
-              {categories.map(category => (
+              {categoryOptions.map(category => (
                 <option key={category} value={category}>{category}</option>
               ))}
             </select>
@@ -315,18 +303,18 @@ const Services = () => {
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredServices.map((service) => (
-          <div key={service.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+          <div key={service._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                   <span className="text-2xl">{service.icon}</span>
                 </div>
                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                  service.status === "Active" 
+                  service.isActive 
                     ? "bg-green-100 text-green-800" 
                     : "bg-red-100 text-red-800"
                 }`}>
-                  {service.status}
+                  {service.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
               
@@ -335,7 +323,7 @@ const Services = () => {
               </h3>
               
               <p className="text-sm text-gray-600 mb-4">
-                {service.description}
+                {service.shortDescription}
               </p>
               
               <div className="space-y-2 mb-4">
@@ -345,11 +333,11 @@ const Services = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">Price:</span>
-                  <span className="font-medium text-green-600">{service.price}</span>
+                  <span className="font-medium text-green-600">{service.pricing?.basic?.price}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">Duration:</span>
-                  <span className="font-medium">{service.duration}</span>
+                  <span className="font-medium">{service.pricing?.basic?.name}</span>
                 </div>
               </div>
               
@@ -371,13 +359,16 @@ const Services = () => {
               
               <div className="flex space-x-2">
                 <button
-                  onClick={() => handleEditService(service)}
+                  onClick={() => {
+                    setSelectedService(service);
+                    setShowEditModal(true);
+                  }}
                   className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
                 >
                   ✏️ Edit
                 </button>
                 <button
-                  onClick={() => handleDeleteService(service.id)}
+                  onClick={() => handleDeleteService(service._id)}
                   className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                 >
                   🗑️ Delete
@@ -393,7 +384,7 @@ const Services = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {editingService ? "Edit Service" : "Add New Service"}
+              {showEditModal ? "Edit Service" : "Add New Service"}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -419,7 +410,7 @@ const Services = () => {
                   onChange={(e) => setNewService({...newService, category: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
-                  {categories.map(category => (
+                  {categoryOptions.map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
@@ -430,13 +421,12 @@ const Services = () => {
                   Status
                 </label>
                 <select
-                  value={newService.status}
-                  onChange={(e) => setNewService({...newService, status: e.target.value})}
+                  value={newService.isActive ? "active" : "inactive"}
+                  onChange={(e) => setNewService({...newService, isActive: e.target.value === "active"})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
-                  {statusOptions.map(status => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
                 </select>
               </div>
 
@@ -446,8 +436,11 @@ const Services = () => {
                 </label>
                 <input
                   type="text"
-                  value={newService.price}
-                  onChange={(e) => setNewService({...newService, price: e.target.value})}
+                  value={newService.pricing?.basic?.price}
+                  onChange={(e) => setNewService({...newService, pricing: {
+                    ...newService.pricing,
+                    basic: { ...newService.pricing.basic, price: parseFloat(e.target.value) }
+                  }})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., $500"
                 />
@@ -459,10 +452,13 @@ const Services = () => {
                 </label>
                 <input
                   type="text"
-                  value={newService.duration}
-                  onChange={(e) => setNewService({...newService, duration: e.target.value})}
+                  value={newService.pricing?.basic?.name}
+                  onChange={(e) => setNewService({...newService, pricing: {
+                    ...newService.pricing,
+                    basic: { ...newService.pricing.basic, name: e.target.value }
+                  }})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="e.g., 2-4 weeks"
+                  placeholder="e.g., Basic"
                 />
               </div>
 
@@ -472,8 +468,8 @@ const Services = () => {
                 </label>
                 <input
                   type="text"
-                  value={newService.features}
-                  onChange={(e) => setNewService({...newService, features: e.target.value})}
+                  value={newService.features.join(', ')}
+                  onChange={(e) => setNewService({...newService, features: e.target.value.split(',').map(f => f.trim())})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="e.g., Feature 1, Feature 2, Feature 3"
                 />
@@ -495,23 +491,32 @@ const Services = () => {
 
             <div className="flex space-x-3 mt-6">
               <button
-                onClick={editingService ? handleUpdateService : handleAddService}
+                onClick={showEditModal ? handleEditService : handleAddService}
                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                {editingService ? "Update" : "Add"} Service
+                {showEditModal ? "Update" : "Add"} Service
               </button>
               <button
                 onClick={() => {
                   setShowAddModal(false);
-                  setEditingService(null);
+                  setShowEditModal(false);
+                  setSelectedService(null);
                   setNewService({
                     title: "",
+                    shortDescription: "",
                     description: "",
-                    category: "Development",
-                    price: "",
-                    duration: "",
-                    status: "Active",
-                    features: ""
+                    category: "",
+                    icon: "",
+                    image: "",
+                    features: [],
+                    pricing: {
+                      basic: { name: "Basic", price: 0, features: [] },
+                      professional: { name: "Professional", price: 0, features: [], popular: false },
+                      enterprise: { name: "Enterprise", price: 0, features: [] }
+                    },
+                    isActive: true,
+                    isFeatured: false,
+                    order: 1
                   });
                 }}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
