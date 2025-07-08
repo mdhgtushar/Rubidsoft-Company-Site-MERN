@@ -41,7 +41,7 @@ const Blog = () => {
     return (
       <>
         <Header />
-        <div className="py-8">
+        <div className="py-8 mt-10">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-slate-900 mb-4">Blog</h1>
