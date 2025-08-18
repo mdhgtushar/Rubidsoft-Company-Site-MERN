@@ -36,184 +36,121 @@ const About = () => {
   const values = [
     {
       title: "Innovation",
-      description: "We stay ahead of technology trends to deliver cutting-edge web solutions",
+      description: "We stay ahead of technology trends to deliver cutting-edge enterprise solutions",
       icon: "🚀",
-      color: "from-blue-500 to-cyan-500"
+      color: "from-blue-600 to-blue-700"
     },
     {
       title: "Quality",
-      description: "Every web project meets the highest standards of excellence and performance",
+      description: "Every project meets the highest standards of excellence and performance",
       icon: "⭐",
-      color: "from-emerald-500 to-teal-500"
+      color: "from-green-600 to-green-700"
     },
     {
       title: "Reliability",
-      description: "Consistent delivery and dependable support for our web development clients",
+      description: "Consistent delivery and dependable support for our enterprise clients",
       icon: "🛡️",
-      color: "from-purple-500 to-pink-500"
+      color: "from-purple-600 to-purple-700"
     },
     {
       title: "Collaboration",
-      description: "Working closely with clients to achieve shared success in web development",
+      description: "Working closely with clients to achieve shared success in development",
       icon: "🤝",
-      color: "from-orange-500 to-red-500"
+      color: "from-red-600 to-red-700"
     }
   ];
 
   const achievements = [
-    { number: "200+", label: "Websites Built", icon: "🌐" },
-    { number: "50+", label: "Happy Clients", icon: "😊" },
+    { number: "200+", label: "Enterprise Solutions", icon: "🏢" },
+    { number: "50+", label: "Corporate Clients", icon: "💼" },
     { number: "5+", label: "Years Experience", icon: "⏰" },
-    { number: "24/7", label: "Support Available", icon: "🛟" }
+    { number: "24/7", label: "Enterprise Support", icon: "🛟" }
   ];
 
   const technologies = [
-    { name: "React.js", icon: "⚛️", color: "from-blue-500 to-cyan-500" },
-    { name: "Node.js", icon: "🖥️", color: "from-emerald-500 to-teal-500" },
-    { name: "MongoDB", icon: "🗄️", color: "from-purple-500 to-pink-500" },
-    { name: "AWS", icon: "☁️", color: "from-orange-500 to-red-500" },
-    { name: "TypeScript", icon: "📘", color: "from-indigo-500 to-blue-500" },
-    { name: "Tailwind CSS", icon: "🎨", color: "from-cyan-500 to-blue-500" }
+    { name: "React.js", icon: "⚛️", color: "from-blue-600 to-blue-700" },
+    { name: "Node.js", icon: "🖥️", color: "from-green-600 to-green-700" },
+    { name: "MongoDB", icon: "🗄️", color: "from-purple-600 to-purple-700" },
+    { name: "AWS", icon: "☁️", color: "from-red-600 to-red-700" },
+    { name: "TypeScript", icon: "📘", color: "from-indigo-600 to-indigo-700" },
+    { name: "Tailwind CSS", icon: "🎨", color: "from-cyan-600 to-cyan-700" }
   ];
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+    <div className="bg-white min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white py-16 rounded-3xl overflow-hidden mb-12 mx-4 shadow-2xl">
+      <section className="relative py-32 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative px-6 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-xl">
+        <div className="relative max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold mb-8">
             About Rubidsoft
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-            We are a team of passionate web developers, designers, and strategists dedicated to 
-            transforming businesses through innovative web development solutions.
+          <p className="text-2xl md:text-3xl text-blue-100 max-w-5xl mx-auto leading-relaxed">
+            We are a team of passionate developers, designers, and strategists dedicated to 
+            transforming businesses through innovative enterprise development solutions.
           </p>
         </div>
       </section>
 
       {/* Mission & Vision */}
-      <section className="py-12 mb-12 mx-4">
-        <div className="px-6">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
                 Our Mission
               </h2>
-              <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-                To provide innovative, secure, and scalable web development solutions that help businesses 
-                grow and succeed in the digital age. We combine cutting-edge web technologies with 
-                industry best practices to deliver exceptional results.
+              <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                To empower businesses with cutting-edge digital solutions that drive growth, 
+                efficiency, and competitive advantage in the modern marketplace.
               </p>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                Our commitment is to understand your unique business challenges and create 
-                tailored web solutions that drive real growth and measurable success.
+              <p className="text-xl text-gray-600 leading-relaxed">
+                We believe that every business deserves access to world-class technology 
+                that can transform their operations and accelerate their success.
               </p>
             </div>
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Our Vision</h3>
-              <p className="text-slate-600 mb-6 text-lg">
-                To be the leading web development partner for businesses seeking digital transformation, 
-                known for our innovation, reliability, and commitment to client success.
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+                Our Vision
+              </h2>
+              <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                To be the leading provider of enterprise-grade web development solutions, 
+                known for innovation, reliability, and exceptional client success.
               </p>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mr-4"></div>
-                  <span className="text-slate-700 font-medium">Global web development leadership</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mr-4"></div>
-                  <span className="text-slate-700 font-medium">Innovation in web technologies</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mr-4"></div>
-                  <span className="text-slate-700 font-medium">Client success partnership</span>
-                </div>
-              </div>
+              <p className="text-xl text-gray-600 leading-relaxed">
+                We envision a future where technology seamlessly integrates with business 
+                processes to create unprecedented opportunities for growth and innovation.
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-12 bg-white rounded-3xl mb-12 mx-4 shadow-xl border border-slate-100">
-        <div className="px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">
-              Our Achievements
-            </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Numbers that reflect our commitment to excellence in web development
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {achievements.map((achievement, index) => (
-              <div key={index} className="text-center transform hover:scale-110 transition-all duration-300 group">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <span className="text-2xl">{achievement.icon}</span>
-                </div>
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                  {achievement.number}
-                </div>
-                <div className="text-slate-600 font-medium text-sm">
-                  {achievement.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Technologies Section */}
-      <section className="py-12 mb-12 mx-4">
-        <div className="px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">
-              Our Technology Stack
-            </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Modern technologies we use to build exceptional web applications
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {technologies.map((tech, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-slate-100"
-              >
-                <div className={`w-12 h-12 bg-gradient-to-br ${tech.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-110 transition-all duration-300`}>
-                  <span className="text-2xl">{tech.icon}</span>
-                </div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                  {tech.name}
-                </h3>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="py-12 mb-12 mx-4">
-        <div className="px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">
-              Our Values
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Our Core Values
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              The principles that guide everything we do in web development
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              The principles that guide our work and relationships with clients
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <div key={index} className="text-center transform hover:scale-105 transition-all duration-300">
-                <div className={`w-16 h-16 bg-gradient-to-br ${value.color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg transform hover:rotate-12 transition-all duration-300`}>
-                  <span className="text-2xl">{value.icon}</span>
+              <div 
+                key={index} 
+                className="text-center group"
+              >
+                <div className={`w-20 h-16 bg-gradient-to-br ${value.color} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-all duration-300`}>
+                  <span className="text-3xl">{value.icon}</span>
                 </div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-3">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
                   {value.title}
                 </h3>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed text-lg">
                   {value.description}
                 </p>
               </div>
@@ -223,42 +160,133 @@ const About = () => {
       </section>
 
       {/* Team Section */}
-      <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl mx-4 shadow-xl">
-        <div className="px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">
-              Our Web Development Team
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Meet Our Team
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Meet the talented web development professionals behind our success
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Experienced professionals passionate about delivering exceptional results
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, index) => (
-              <div key={index} className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-slate-100">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <span className="text-3xl">{member.image}</span>
+              <div 
+                key={index} 
+                className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 shadow-lg group"
+              >
+                <div className="text-center mb-6">
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-all duration-300">
+                    <span className="text-4xl">{member.image}</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {member.name}
                   </h3>
-                  <p className="text-blue-600 font-medium mb-4 text-sm">
+                  <p className="text-blue-600 font-semibold text-lg">
                     {member.role}
                   </p>
-                  <p className="text-slate-600 text-sm mb-4 leading-relaxed">
-                    {member.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    {member.technologies.map((tech, idx) => (
-                      <span key={idx} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
+                </div>
+                <p className="text-gray-600 text-lg mb-6 leading-relaxed text-center">
+                  {member.description}
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {member.technologies.map((tech, idx) => (
+                    <span key={idx} className="text-sm bg-gray-100 text-gray-700 px-3 py-2 rounded-lg font-medium">
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Achievements Section */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Our Achievements
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Proven track record of delivering exceptional results for enterprise clients
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {achievements.map((achievement, index) => (
+              <div key={index} className="text-center group">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  <span className="text-3xl">{achievement.icon}</span>
+                </div>
+                <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-3">
+                  {achievement.number}
+                </div>
+                <div className="text-gray-700 font-medium text-lg">
+                  {achievement.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Technologies Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Technologies We Master
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Cutting-edge tools and frameworks for building robust enterprise solutions
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {technologies.map((tech, index) => (
+              <div 
+                key={index} 
+                className="bg-gray-50 border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group"
+              >
+                <div className={`w-16 h-16 bg-gradient-to-br ${tech.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-all duration-300`}>
+                  <span className="text-3xl">{tech.icon}</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {tech.name}
+                </h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+        <div className="max-w-4xl mx-auto text-center px-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Ready to Transform Your Business?
+          </h2>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-10 leading-relaxed">
+            Let's discuss how our enterprise development solutions can help you achieve 
+            your business goals and drive digital transformation.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link
+              to="/contact"
+              className="bg-white text-blue-600 px-10 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg"
+            >
+              Get Started Today
+            </Link>
+            <Link
+              to="/projects"
+              className="border-2 border-white text-white px-10 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg"
+            >
+              View Our Work
+            </Link>
           </div>
         </div>
       </section>

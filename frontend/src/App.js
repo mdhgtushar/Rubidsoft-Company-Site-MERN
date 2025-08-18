@@ -106,7 +106,11 @@ function App() {
               <OrderForm />
             </ClientLayout>
           } />
-          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog" element={
+            <ClientLayout>
+              <Blog />
+            </ClientLayout>
+          } />
 
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />

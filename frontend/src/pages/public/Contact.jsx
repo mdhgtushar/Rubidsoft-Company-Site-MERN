@@ -100,58 +100,33 @@ const Contact = () => {
       setError("Message is required");
       return false;
     }
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      setError("Please enter a valid email address");
-      return false;
-    }
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setIsSubmitting(true);
     setError("");
     setSuccess("");
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
+    
     try {
-      // Prepare contact data
-      const contactData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
-        service: formData.service,
-        message: formData.message,
-        consultation: formData.consultation,
-        budget: formData.budget,
-        timeline: formData.timeline,
-        projectType: formData.projectType,
-        status: "new"
-      };
-
-      // Create FormData for file uploads
       const formDataToSend = new FormData();
-      
-      // Add contact data
-      Object.keys(contactData).forEach(key => {
-        formDataToSend.append(key, contactData[key]);
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== "") {
+          formDataToSend.append(key, formData[key]);
+        }
       });
-
-      // Add attachments
-      attachments.forEach((file, index) => {
-        formDataToSend.append(`attachments`, file);
+      
+      attachments.forEach(file => {
+        formDataToSend.append('attachments', file);
       });
-
-      const response = await contactService.createContact(formDataToSend);
       
-      setSuccess("Thank you for your message! We'll get back to you within 24 hours.");
+      await contactService.submitContactForm(formDataToSend);
       
-      // Reset form
+      setSuccess("Thank you! Your message has been sent successfully. We'll get back to you within 24 hours.");
       setFormData({
         name: "",
         email: "",
@@ -165,71 +140,118 @@ const Contact = () => {
         projectType: ""
       });
       setAttachments([]);
-
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSuccess("");
-      }, 5000);
-
     } catch (error) {
-      console.error('Contact submission error:', error);
-      setError(error.response?.data?.message || "Failed to send message. Please try again.");
+      console.error('Error submitting form:', error);
+      setError("Failed to send message. Please try again or contact us directly.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const contactInfo = [
+    {
+      icon: <MapPin className="w-6 h-6" />,
+      title: "Office Address",
+      details: "123 Business District, Tech City, TC 12345",
+      color: "from-blue-600 to-blue-700"
+    },
+    {
+      icon: <Mail className="w-6 h-6" />,
+      title: "Email Address",
+      details: "hello@rubidsoft.com",
+      color: "from-green-600 to-green-700"
+    },
+    {
+      icon: <Phone className="w-6 h-6" />,
+      title: "Phone Number",
+      details: "+1 (555) 123-4567",
+      color: "from-purple-600 to-purple-700"
+    },
+    {
+      icon: <Clock className="w-6 h-6" />,
+      title: "Business Hours",
+      details: "Mon - Fri: 9:00 AM - 6:00 PM EST",
+      color: "from-red-600 to-red-700"
+    }
+  ];
+
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">Get In Touch</h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Ready to start your web development project? Contact us today and let's discuss how we can help bring your vision to life.
+    <div className="bg-gray-50 min-h-screen pt-20">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white py-16 rounded-xl overflow-hidden mb-16 mx-4 shadow-lg">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative px-6 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+            Get In Touch
+          </h1>
+          <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+            Ready to transform your business? Let's discuss how our enterprise development 
+            solutions can help you achieve your goals.
           </p>
         </div>
+      </section>
 
-        {/* Success/Error Messages */}
+      {/* Contact Information */}
+      <section className="mb-16 mx-4">
+        <div className="px-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {contactInfo.map((info, index) => (
+              <div 
+                key={index} 
+                className="bg-white border border-gray-200 rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 shadow-lg"
+              >
+                <div className={`w-12 h-12 bg-gradient-to-br ${info.color} rounded-lg flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                  <div className="text-white">
+                    {info.icon}
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {info.title}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {info.details}
+          </p>
+        </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form & Map */}
+      <section className="mb-16 mx-4">
+        <div className="px-6">
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Contact Form */}
+            <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Send Us a Message</h2>
+              </div>
+
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-2xl flex items-center shadow-lg">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            {success}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                    <span className="text-green-800">{success}</span>
+                  </div>
           </div>
         )}
         
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl flex items-center shadow-lg">
-            <AlertCircle className="w-5 h-5 mr-2" />
-            {error}
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center">
+                    <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                    <span className="text-red-800">{error}</span>
+                  </div>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Send Us a Message</h2>
-            
-            {/* Free Consultation Banner */}
-            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl p-6 mb-6 shadow-lg">
-              <div className="flex items-center space-x-3 mb-3">
-                <span className="text-2xl">🎁</span>
-                <h3 className="text-xl font-bold">Free 3-Hour Consultation</h3>
-              </div>
-              <p className="text-blue-100 mb-4">
-                Get expert advice on your web development project requirements, technology stack, and implementation strategy. 
-                No strings attached!
-              </p>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <span className="text-sm font-medium">Value: $300-600</span>
-              </div>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name *
                   </label>
                   <input
@@ -237,14 +259,13 @@ const Contact = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     placeholder="Enter your full name"
                     required
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address *
                   </label>
                   <input
@@ -252,16 +273,16 @@ const Contact = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                    placeholder="Enter your email address"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      placeholder="Enter your email"
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
                   </label>
                   <input
@@ -269,13 +290,12 @@ const Contact = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     placeholder="Enter your phone number"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Company Name
                   </label>
                   <input
@@ -283,22 +303,22 @@ const Contact = () => {
                     name="company"
                     value={formData.company}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     placeholder="Enter your company name"
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Service of Interest
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Service Interest
                   </label>
                   <select
                     name="service"
                     value={formData.service}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   >
                     <option value="">Select a service</option>
                     {services.map((service, index) => (
@@ -306,16 +326,15 @@ const Contact = () => {
                     ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Project Type
                   </label>
                   <select
                     name="projectType"
                     value={formData.projectType}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   >
                     <option value="">Select project type</option>
                     {projectTypes.map((type, index) => (
@@ -325,279 +344,211 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Budget Range
                   </label>
                   <select
                     name="budget"
                     value={formData.budget}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   >
                     <option value="">Select budget range</option>
-                    {budgetRanges.map((range, index) => (
-                      <option key={index} value={range}>{range}</option>
+                      {budgetRanges.map((budget, index) => (
+                        <option key={index} value={budget}>{budget}</option>
                     ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                     Timeline
                   </label>
                   <select
                     name="timeline"
                     value={formData.timeline}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   >
                     <option value="">Select timeline</option>
-                    {timelines.map((time, index) => (
-                      <option key={index} value={time}>{time}</option>
+                      {timelines.map((timeline, index) => (
+                        <option key={index} value={timeline}>{timeline}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Message *
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Project Details *
                 </label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
-                  rows={5}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Tell us about your web development project, requirements, or any questions you have..."
+                    rows={6}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                    placeholder="Tell us about your project requirements, goals, and any specific features you need..."
                   required
-                />
+                  ></textarea>
               </div>
 
-              {/* File Upload */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Attachments (Optional)
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Attachments
                 </label>
-                <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-blue-400 transition-colors duration-300">
-                  <Upload className="mx-auto h-12 w-12 text-slate-400" />
-                  <div className="mt-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600 mb-2">
+                      Drop files here or click to upload
+                    </p>
                     <input
                       type="file"
                       multiple
                       onChange={handleFileChange}
                       className="hidden"
                       id="file-upload"
-                      accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
                     />
                     <label
                       htmlFor="file-upload"
-                      className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer inline-block"
                     >
                       Choose Files
                     </label>
-                    <p className="text-sm text-slate-500 mt-2">
-                      PDF, DOC, Images up to 10MB each
-                    </p>
                   </div>
                   {attachments.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-sm font-medium text-slate-700">Selected files:</p>
-                      <ul className="mt-2 space-y-1">
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600">Selected files:</p>
+                      <ul className="text-sm text-gray-500">
                         {attachments.map((file, index) => (
-                          <li key={index} className="text-sm text-slate-600">
-                            {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                          </li>
+                          <li key={index}>{file.name}</li>
                         ))}
                       </ul>
                     </div>
                   )}
-                </div>
               </div>
 
-              <div className="flex items-center space-x-3">
+                <div className="flex items-center">
                 <input
                   type="checkbox"
                   name="consultation"
                   checked={formData.consultation}
                   onChange={handleInputChange}
-                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <label className="text-sm text-slate-700">
-                  I would like to schedule a free 3-hour consultation
+                  <label className="ml-2 text-sm text-gray-700">
+                    I would like a free consultation call
                 </label>
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-2xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
+                  className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 transition-colors flex items-center justify-center"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Sending...</span>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Sending Message...
                   </>
                 ) : (
                   <>
-                    <Send className="w-5 h-5" />
-                    <span>Send Message</span>
+                      <Send className="w-5 h-5 mr-2" />
+                      Send Message
                   </>
                 )}
               </button>
             </form>
           </div>
 
-          {/* Contact Information */}
-          <div className="space-y-8">
-            {/* Company Info */}
-            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-              <h2 className="text-2xl font-bold text-slate-800 mb-6">Contact Information</h2>
-              
+            {/* Map & Additional Info */}
               <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <MapPin className="w-6 h-6 text-white" />
+              {/* Map Placeholder */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Our Location</h3>
+                <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <MapPin className="w-12 h-12 mx-auto mb-2" />
+                    <p>Interactive Map</p>
+                    <p className="text-sm">123 Business District, Tech City, TC 12345</p>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">Address</h3>
-                    <p className="text-slate-600">Dhaka, Bangladesh</p>
-                    <p className="text-slate-600">Serving clients worldwide</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <Mail className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">Email</h3>
-                    <a href="mailto:info@rubidsoft.com" className="text-blue-600 hover:text-blue-700 font-medium">
-                      info@rubidsoft.com
-                    </a>
-                    <p className="text-sm text-slate-500">We respond within 24 hours</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <Phone className="w-6 h-6 text-white" />
+              {/* Business Hours */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Business Hours</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Monday - Friday</span>
+                    <span className="font-medium text-gray-900">9:00 AM - 6:00 PM EST</span>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">Phone</h3>
-                    <a href="tel:+8801234567890" className="text-blue-600 hover:text-blue-700 font-medium">
-                      +880 1234 567 890
-                    </a>
-                    <p className="text-sm text-slate-500">Mon-Fri, 9AM-6PM (GMT+6)</p>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Saturday</span>
+                    <span className="font-medium text-gray-900">10:00 AM - 4:00 PM EST</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Sunday</span>
+                    <span className="font-medium text-gray-900">Closed</span>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Emergency Support:</strong> Available 24/7 for critical issues
+                  </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <Clock className="w-6 h-6 text-white" />
+              {/* Response Time */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Response Time</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span className="text-gray-700">Initial response within 2 hours</span>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">Response Time</h3>
-                    <p className="text-slate-600">Within 24 hours</p>
-                    <p className="text-slate-600">Emergency support available</p>
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span className="text-gray-700">Detailed proposal within 24 hours</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    <span className="text-gray-700">Project kickoff within 48 hours</span>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Services Overview */}
-            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-              <h2 className="text-2xl font-bold text-slate-800 mb-6">Our Web Development Services</h2>
-              
-              <div className="space-y-4">
-                {services.slice(0, 8).map((service, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
-                    <span className="text-slate-700">{service}</span>
-                  </div>
-                ))}
               </div>
-              
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <a
-                  href="/services"
-                  className="text-blue-600 hover:text-blue-700 font-semibold flex items-center"
-                >
-                  View All Services
-                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+            </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl mx-4 shadow-lg">
+        <div className="px-8 text-center">
+          <h2 className="text-4xl font-bold mb-6">
+            Ready to Start Your Project?
+          </h2>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8 leading-relaxed">
+            Don't wait to transform your business. Contact us today and let's discuss 
+            how we can help you achieve your digital goals.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="tel:+15551234567"
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Call Us Now
+            </a>
+            <a
+              href="mailto:hello@rubidsoft.com"
+              className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Send Email
                 </a>
               </div>
             </div>
-
-            {/* Why Choose Us */}
-            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl p-8 shadow-xl">
-              <h2 className="text-2xl font-bold mb-6">Why Choose Rubidsoft?</h2>
-              
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>Professional & Experienced Web Development Team</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>Modern Technology Stack</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>On-Time Delivery</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>Post-Launch Support</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>Competitive Pricing</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>100% Client Satisfaction</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Contact */}
-            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
-              <h2 className="text-2xl font-bold text-slate-800 mb-6">Quick Contact</h2>
-              
-              <div className="space-y-4">
-                <a
-                  href="mailto:info@rubidsoft.com"
-                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 border border-blue-100"
-                >
-                  <Mail className="w-5 h-5 text-blue-600" />
-                  <span className="text-blue-600 font-medium">Send Email</span>
-                </a>
-                
-                <a
-                  href="tel:+8801234567890"
-                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl hover:from-green-100 hover:to-emerald-100 transition-all duration-300 border border-green-100"
-                >
-                  <Phone className="w-5 h-5 text-green-600" />
-                  <span className="text-green-600 font-medium">Call Now</span>
-                </a>
-                
-                <a
-                  href="/order-form"
-                  className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl hover:from-purple-100 hover:to-pink-100 transition-all duration-300 border border-purple-100"
-                >
-                  <MessageSquare className="w-5 h-5 text-purple-600" />
-                  <span className="text-purple-600 font-medium">Place Order</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };
